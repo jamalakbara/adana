@@ -57,13 +57,13 @@ export function Select({ children, value, onValueChange, className = "" }: Selec
     <div className={`relative ${className}`}>
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
-          return React.cloneElement(child as React.ReactElement<any>, {
-            ...(child.props as any),
+          return React.cloneElement(child as React.ReactElement, {
+            ...(child.props as Record<string, unknown>),
             isOpen,
             setIsOpen,
             value: internalValue,
             onValueChange: handleValueChange
-          });
+          } as Record<string, unknown>);
         }
         return child;
       })}

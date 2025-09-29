@@ -69,7 +69,7 @@ export function ServiceExpansionItem({
                     variant="primary"
                     hasArrow={true}
                     className="w-fit"
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={() => {}}
                   >
                     {ctaText}
                   </AnimatedButton>
