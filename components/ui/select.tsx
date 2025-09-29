@@ -6,6 +6,7 @@ import { ChevronDown } from "lucide-react";
 interface SelectProps {
   children: React.ReactNode;
   value?: string;
+  defaultValue?: string;
   onValueChange?: (value: string) => void;
   className?: string;
 }
@@ -15,11 +16,14 @@ interface SelectTriggerProps {
   className?: string;
   size?: string;
   "aria-label"?: string;
+  id?: string;
 }
 
 interface SelectContentProps {
   children: React.ReactNode;
   className?: string;
+  align?: string;
+  side?: string;
 }
 
 interface SelectItemProps {
@@ -29,23 +33,36 @@ interface SelectItemProps {
 }
 
 interface SelectValueProps {
-  placeholder?: string;
+  placeholder?: string | number;
   className?: string;
 }
 
 export function Select({ children, value, onValueChange, className = "" }: SelectProps) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [internalValue, setInternalValue] = React.useState(value || "");
+
+  const handleValueChange = (newValue: string) => {
+    setInternalValue(newValue);
+    onValueChange?.(newValue);
+    setIsOpen(false);
+  };
+
+  React.useEffect(() => {
+    if (value !== undefined) {
+      setInternalValue(value);
+    }
+  }, [value]);
 
   return (
     <div className={`relative ${className}`}>
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
-          return React.cloneElement(child as React.ReactElement, {
-            ...child.props,
+          return React.cloneElement(child as React.ReactElement<any>, {
+            ...(child.props as any),
             isOpen,
             setIsOpen,
-            value,
-            onValueChange
+            value: internalValue,
+            onValueChange: handleValueChange
           });
         }
         return child;
@@ -54,14 +71,11 @@ export function Select({ children, value, onValueChange, className = "" }: Selec
   );
 }
 
-export function SelectTrigger({ children, className = "", size, "aria-label": ariaLabel, ...props }: any) {
-  const { setIsOpen, isOpen } = props;
-
+export function SelectTrigger({ children, className = "", size, "aria-label": ariaLabel, id }: SelectTriggerProps) {
   return (
     <button
       type="button"
       className={`flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
-      onClick={() => setIsOpen(!isOpen)}
       aria-label={ariaLabel}
     >
       {children}
@@ -70,38 +84,21 @@ export function SelectTrigger({ children, className = "", size, "aria-label": ar
   );
 }
 
-export function SelectContent({ children, className = "", ...props }: any) {
-  const { isOpen, setIsOpen } = props;
-
-  if (!isOpen) return null;
-
+export function SelectContent({ children, className = "", align, side }: SelectContentProps) {
   return (
     <div className={`absolute top-full left-0 right-0 z-50 mt-1 rounded-md border bg-popover text-popover-foreground shadow-md ${className}`}>
       <div className="p-1">
-        {React.Children.map(children, (child) => {
-          if (React.isValidElement(child)) {
-            return React.cloneElement(child as React.ReactElement, {
-              ...child.props,
-              setIsOpen
-            });
-          }
-          return child;
-        })}
+        {children}
       </div>
     </div>
   );
 }
 
-export function SelectItem({ children, value, className = "", ...props }: any) {
-  const { onValueChange, setIsOpen } = props;
-
+export function SelectItem({ children, value, className = "", onClick }: SelectItemProps & { onClick?: () => void }) {
   return (
     <div
       className={`relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground ${className}`}
-      onClick={() => {
-        onValueChange?.(value);
-        setIsOpen(false);
-      }}
+      onClick={onClick}
     >
       {children}
     </div>
@@ -111,7 +108,7 @@ export function SelectItem({ children, value, className = "", ...props }: any) {
 export function SelectValue({ placeholder, className = "" }: SelectValueProps) {
   return (
     <span className={`block truncate ${className}`}>
-      {placeholder}
+      {placeholder?.toString()}
     </span>
   );
 }
