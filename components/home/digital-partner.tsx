@@ -61,7 +61,7 @@ function PartnerTag({ label, isActive = false, onClick }: PartnerTagProps) {
           : 'bg-[#FCFCF4] text-[#646464] font-normal hover:bg-[#f5f5ed] hover:shadow-md'
       }`}
     >
-      <p className="leading-[normal] text-[16px] whitespace-nowrap">{label}</p>
+      <p className="font-['Public_Sans'] leading-[normal] text-[14px] sm:text-[16px] whitespace-nowrap">{label}</p>
     </button>
   );
 }
@@ -74,11 +74,9 @@ interface PartnerCardProps {
 function PartnerCard({ imageSrc, alt, index = 0 }: PartnerCardProps & { index?: number }) {
   return (
     <div
-      className="bg-[#FCFCF4] h-[70px] sm:h-[80px] md:h-[90px] w-[160px] sm:w-[180px] md:w-[204px] rounded-lg flex items-center justify-center transition-all duration-500 hover:shadow-lg hover:scale-105 hover:bg-white"
+      className="bg-[#FCFCF4] h-[70px] sm:h-[80px] md:h-[90px] w-[160px] sm:w-[180px] md:w-[204px] rounded-lg flex items-center justify-center transition-all duration-500 hover:shadow-lg hover:scale-105 hover:bg-white animate-fadeInUp"
       style={{
-        animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`,
-        opacity: 0,
-        transform: 'translateY(30px)'
+        animationDelay: `${index * 0.1}s`
       }}
     >
       <img
@@ -92,11 +90,6 @@ function PartnerCard({ imageSrc, alt, index = 0 }: PartnerCardProps & { index?: 
 
 export function DigitalPartner() {
   const [activePartner, setActivePartner] = useState<string>("Social Partner");
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
 
   const currentPartners = partnerData[activePartner as keyof typeof partnerData] || [];
 
@@ -106,10 +99,10 @@ export function DigitalPartner() {
         <div className="text-center mb-[16px]">
           <Typography
             variant="section-label"
-            className="text-center"
+            className="text-center animate-fadeInDown"
             nodeId="115:10797"
             style={{
-              animation: isVisible ? 'fadeInDown 0.8s ease-out 0.2s both' : 'none'
+              animationDelay: '0.2s'
             }}
           >
             Digital Partner
@@ -119,17 +112,11 @@ export function DigitalPartner() {
         {/* Main headline */}
         <div className="text-center mb-[80px] flex justify-center">
           <h1
-            className="w-full max-w-full sm:max-w-[600px] md:max-w-[700px] lg:max-w-[800px] xl:max-w-[888px] text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] xl:text-[44px]"
-            style={{
-              color: "#1E1E1E",
-              textAlign: "center",
-              fontFamily: '"Public Sans"',
-              fontStyle: "normal",
-              fontWeight: "400",
-              lineHeight: "normal",
-              animation: isVisible ? 'fadeInUp 0.8s ease-out 0.4s both' : 'none'
-            }}
+            className="font-['Public_Sans'] text-[#1E1E1E] text-center text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] font-normal leading-normal w-full max-w-full sm:max-w-[600px] md:max-w-[700px] lg:max-w-[800px] xl:max-w-[888px] animate-fadeInUp"
             data-node-id="115:10782"
+            style={{
+              animationDelay: '0.4s'
+            }}
           >
             Your Trusted Digital Partner for
             <br />
@@ -139,34 +126,37 @@ export function DigitalPartner() {
 
         {/* Partner tags */}
         <div
-          className="flex flex-wrap justify-center mb-[40px] sm:mb-[60px] md:mb-[80px]"
+          className="mb-[40px] sm:mb-[60px] md:mb-[80px] animate-fadeInUp -mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-hide"
           style={{
-            animation: isVisible ? 'fadeInUp 0.8s ease-out 0.6s both' : 'none'
+            animationDelay: '0.6s',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none'
           }}
         >
-          {Object.keys(partnerData).map((partner, index) => (
-            <div
-              key={partner}
-              style={{
-                animation: isVisible ? `fadeInUp 0.6s ease-out ${0.6 + index * 0.1}s both` : 'none',
-                opacity: 0,
-                transform: 'translateY(20px)'
-              }}
-            >
-              <PartnerTag
-                label={partner}
-                isActive={activePartner === partner}
-                onClick={() => setActivePartner(partner)}
-              />
-            </div>
-          ))}
+          <div className="flex sm:flex-wrap justify-center sm:justify-center min-w-max sm:min-w-0">
+            {Object.keys(partnerData).map((partner, index) => (
+              <div
+                key={partner}
+                className="animate-fadeInUp flex-shrink-0"
+                style={{
+                  animationDelay: `${0.6 + index * 0.1}s`
+                }}
+              >
+                <PartnerTag
+                  label={partner}
+                  isActive={activePartner === partner}
+                  onClick={() => setActivePartner(partner)}
+                />
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Partner cards grid */}
         <div
-          className="flex justify-center"
+          className="flex justify-center animate-fadeInUp"
           style={{
-            animation: isVisible ? 'fadeInUp 0.8s ease-out 0.8s both' : 'none'
+            animationDelay: '0.8s'
           }}
         >
           <div className="flex flex-wrap justify-center gap-4 sm:gap-5 md:gap-6 max-w-4xl">

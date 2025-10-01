@@ -14,7 +14,6 @@ interface ServiceExpansionItemProps {
   showCTA?: boolean;
   ctaText?: string;
   imagePosition?: "right" | "left";
-  expandedHeight?: string;
 }
 
 export function ServiceExpansionItem({
@@ -27,28 +26,27 @@ export function ServiceExpansionItem({
   isFirst = false,
   showCTA = true,
   ctaText = "Let's Discuss",
-  imagePosition = "right",
-  expandedHeight = "512px"
+  imagePosition = "right"
 }: ServiceExpansionItemProps) {
   return (
     <div
-      className={`relative overflow-hidden transition-all duration-500 ease-in-out cursor-pointer ${
+      className={`relative overflow-hidden transition-all duration-500 ease-in-out cursor-pointer sm:max-h-none ${
         isFirst ? 'border-t border-b' : 'border-b'
       } border-[#DEDACF]`}
-      style={{ maxHeight: isExpanded ? expandedHeight : '92px' }}
+      style={{ maxHeight: isExpanded ? 'none' : '92px' }}
       data-node-id={nodeId}
     >
       <div
-        className={`flex transition-colors duration-300 ${
+        className={`flex flex-col justify-between sm:flex-row sm:gap-8 transition-colors duration-300 ${
           isExpanded
             ? 'bg-[#334e4d]'
             : 'bg-[#FCFCF4] hover:bg-[#f5f5ed]'
-        } ${imagePosition === 'left' ? 'flex-row-reverse' : ''}`}
+        } ${imagePosition === 'left' ? 'sm:flex-row-reverse' : ''}`}
         onClick={onToggle}
       >
         {/* Content Side */}
-        <div className="flex flex-col justify-center p-4 sm:p-5 md:p-6 flex-1">
-          <h2 className={`font-['Public_Sans'] text-[24px] font-normal leading-normal self-stretch ${
+        <div className="flex flex-col justify-center p-4 sm:p-5 md:p-6 flex-1 max-w-[546px] sm:max-w-none">
+          <h2 className={`font-['Public_Sans'] text-[18px] sm:text-[24px] font-normal leading-normal self-stretch ${
             isExpanded ? 'text-white' : 'text-[#1E1E1E]'
           }`}>
             {title}
@@ -81,14 +79,12 @@ export function ServiceExpansionItem({
 
         {/* Image Side */}
         {imageUrl && isExpanded && (
-          <div className="relative w-[250px] sm:w-[300px] md:w-[366px] overflow-hidden" style={{ height: expandedHeight === "512px" ? "200px sm:[250px] md:[320px]" : expandedHeight }}>
-            <div className="absolute right-0 top-0 w-[250px] sm:w-[300px] md:w-[366px] h-[200px] sm:h-[250px] md:h-[320px]">
-              <img
-                src={imageUrl}
-                alt={title}
-                className="w-full h-full object-cover"
-              />
-            </div>
+          <div className="relative w-full aspect-square sm:w-[300px] sm:h-[300px] overflow-hidden flex-shrink-0">
+            <img
+              src={imageUrl}
+              alt={title}
+              className="w-full h-full object-cover"
+            />
           </div>
         )}
       </div>

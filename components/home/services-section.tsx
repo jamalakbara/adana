@@ -17,7 +17,7 @@ export function ServicesSection() {
           Our Service
         </Typography>
 
-        <div className="flex justify-between items-end">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end">
           <div>
             <Typography variant="section-title" className="w-full max-w-full sm:max-w-[500px] md:max-w-[546px]" nodeId="115:10781">
               What We Offer
@@ -26,7 +26,7 @@ export function ServicesSection() {
             </Typography>
           </div>
 
-          <Typography variant="section-description" className="w-full max-w-full sm:max-w-[400px] md:max-w-[432px]" nodeId="115:10871">
+          <Typography variant="section-description" className="w-full max-w-full sm:max-w-[400px] md:max-w-[432px] mt-4 sm:mt-0" nodeId="115:10871">
             Lorem ipsum dolor sit amet consectetur. Maecenas lorem massa eleifend commodo convallis. Pellentesque quis aliquet auctor ultricies. Viverra cursus amet mi pellentesque libero non.
           </Typography>
         </div>
