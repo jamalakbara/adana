@@ -1,0 +1,287 @@
+# Design System Rules for Figma Integration
+
+## Core Principles
+
+This codebase uses a modern, accessible design system built on **shadcn/ui** with **Tailwind CSS v4** and **Next.js 15**. All Figma implementations should follow these established patterns.
+
+## 1. Design Tokens & Color System
+
+### Color Architecture
+- **Color Space**: Uses Oklch for better color management
+- **Theme Variables**: All colors use CSS custom properties
+- **Dark Mode**: Full dark/light theme support with automatic switching
+
+**Reference Colors:**
+```css
+/* Core palette from globals.css */
+--background: oklch(1 0 0);           /* White/cream */
+--foreground: oklch(0.129 0.042 264.695);  /* Dark text */
+--primary: oklch(0.208 0.042 265.755);     /* Primary blue */
+--border: oklch(0.929 0.013 255.508);      /* Light borders */
+```
+
+**Brand Colors:**
+```css
+/* Custom brand colors - use these directly */
+.bg-[#fcfcf4]    /* Light cream background */
+.text-[#1e1e1e]   /* Dark text color */
+.hover\:bg-[#f1ff66]  /* Yellow hover state */
+```
+
+### Typography System
+- **Primary Font**: Geist Sans (variable font)
+- **Secondary Font**: Parkinsans for headings
+- **Monospace**: Geist Mono for code
+- **UI Font**: Public Sans for components
+
+**Typography Scale:**
+```tsx
+// Use responsive typography patterns
+className="text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px]"
+```
+
+### Spacing System
+- **Base Unit**: 0.25rem (4px)
+- **Border Radius**: `--radius: 0.625rem` (10px)
+- **Responsive Padding**: `px-4 sm:px-6 lg:px-8`
+
+## 2. Component Architecture
+
+### Base Patterns
+1. **shadcn/ui Foundation**: All components build on shadcn/ui + Radix UI
+2. **CVA for Variants**: Use Class Variance Authority for component variants
+3. **Compound Components**: Card with CardHeader, CardContent, CardFooter
+4. **Accessibility First**: Always include ARIA attributes and keyboard navigation
+
+### Component Structure
+```
+components/
+├── ui/                    # shadcn/ui base components
+├── [feature]/             # Feature-specific components
+└── shared/                # Cross-cutting components
+```
+
+### Button Patterns
+```tsx
+// Always use CVA for button variants
+const buttonVariants = cva(
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
+        destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+        outline: "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+        secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default: "h-9 px-4 py-2",
+        sm: "h-8 rounded-md px-3 text-xs",
+        lg: "h-10 rounded-md px-8",
+        icon: "h-9 w-9",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+);
+```
+
+## 3. Responsive Design System
+
+### Breakpoints
+- **Mobile**: < 480px (base styles)
+- **Small Tablet**: 480px - 768px (`sm:` prefix)
+- **Tablet**: 768px - 1024px (`md:` prefix)
+- **Desktop**: 1024px - 1280px (`lg:` prefix)
+- **Large Desktop**: > 1280px (`xl:` prefix)
+
+### Mobile-First Pattern
+```tsx
+// Always design mobile-first, then enhance
+<div className="px-4 sm:px-6 lg:px-8">
+  <div className="h-[60px] sm:h-[70px] md:h-[80px]">
+    <p className="text-sm sm:text-base">Content</p>
+  </div>
+</div>
+```
+
+## 4. Icon System
+
+### Icon Libraries
+- **Primary**: Lucide React (all standard icons)
+- **Secondary**: Tabler Icons (`@tabler/icons-react`)
+
+### Icon Usage
+```tsx
+import { IconName } from "lucide-react";
+
+// Consistent sizing and theming
+<IconName className="h-5 w-5 text-current" />
+<IconName className="h-6 w-6 text-[#1e1e1e]" />
+```
+
+### Custom Icons
+For brand-specific icons from Figma:
+1. Export as SVG from Figma
+2. Place in `public/icons/` directory
+3. Use as standard SVG components
+
+## 5. Animation & Interactions
+
+### Animation Patterns
+- **Subtle Transitions**: Use `transition-colors duration-300`
+- **Hover States**: Always include hover/focus states
+- **Loading States**: Use skeleton components for async content
+- **Micro-interactions**: Scale, opacity, and color transitions
+
+### Custom Animations
+```css
+/* Add to globals.css for custom animations */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+```
+
+## 6. Accessibility Requirements
+
+### Mandatory Attributes
+- **Buttons**: `aria-label`, `aria-expanded` for toggle states
+- **Navigation**: `aria-current="page"` for active links
+- **Forms**: Proper labels and error messages
+- **Modals**: `role="dialog"`, `aria-modal="true"`
+
+### Keyboard Navigation
+- **Focus Management**: Visible focus indicators
+- **Tab Order**: Logical navigation flow
+- **Escape Handlers**: Close modals/drawers on Escape
+
+## 7. Figma-to-Code Implementation Rules
+
+### Component Mapping
+| Figma Element | Implementation |
+|---------------|----------------|
+| Frame/Group | `div` with appropriate layout classes |
+| Text | Typography component with variant |
+| Rectangle/Shape | `div` with background/border utilities |
+| Auto Layout | Flexbox/Grid with Tailwind classes |
+| Component | Corresponding shadcn/ui component |
+
+### Style Implementation
+1. **Colors**: Use CSS variables for design tokens, direct hex for brand colors
+2. **Spacing**: Use Tailwind spacing utilities (m-4, p-6, etc.)
+3. **Typography**: Use typography component variants
+4. **Shadows**: Use Tailwind shadow utilities (shadow, shadow-lg)
+5. **Borders**: Use border utilities with radius variables
+
+### Responsive Implementation
+- **Mobile Layout**: Base styles (no prefix)
+- **Tablet Layout**: Add `sm:` and `md:` prefixes
+- **Desktop Layout**: Add `lg:` and `xl:` prefixes
+- **Always**: Test at all breakpoints
+
+### Code Quality Standards
+- **TypeScript**: Always use proper typing for props
+- **Component Structure**: Follow existing patterns
+- **Performance**: Use React.memo for expensive components
+- **Testing**: Include accessibility and visual regression tests
+
+## 8. Asset Management
+
+### Image Optimization
+- **Next.js Image**: Always use `next/image` for optimization
+- **Formats**: Prefer WebP, PNG for compatibility
+- **Responsive**: Use `sizes` and `srcSet` attributes
+- **Loading**: Use `priority` for above-the-fold images
+
+### Icon Management
+- **SVG Icons**: Use inline SVG for custom icons
+- **Icon Libraries**: Use Lucide React for standard icons
+- **Optimization**: Optimize SVG files before inclusion
+
+## 9. Theme Integration
+
+### Dark Mode Support
+- **Automatic**: Uses `next-themes` for system preference
+- **Manual**: Include theme toggle in navigation
+- **Colors**: Always define both light and dark variants
+- **Testing**: Test in both themes
+
+### Theme Variables
+```tsx
+// Always use theme variables for colors
+className="bg-background text-foreground border-border"
+// Instead of hardcoded values
+className="bg-white text-black border-gray-200"
+```
+
+## 10. Development Workflow
+
+### Figma Handoff Process
+1. **Review Design**: Check against design system tokens
+2. **Component Mapping**: Identify corresponding shadcn/ui components
+3. **Custom Elements**: Create new components following established patterns
+4. **Responsive Review**: Ensure all breakpoints are addressed
+5. **Accessibility Check**: Verify ARIA attributes and keyboard navigation
+6. **Testing**: Visual regression and accessibility testing
+
+### Code Review Checklist
+- [ ] Uses established design tokens
+- [ ] Follows responsive patterns
+- [ ] Includes proper accessibility attributes
+- [ ] Uses TypeScript interfaces
+- [ ] Follows component naming conventions
+- [ ] Includes proper error handling
+- [ ] Works in both light and dark themes
+- [ ] Tested at all breakpoints
+
+## Implementation Examples
+
+### Card Component from Figma
+```tsx
+// Figma Frame with Auto Layout
+<div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+  <div className="flex flex-col space-y-1.5 p-6">
+    <h3 className="text-2xl font-semibold leading-none tracking-tight">Card Title</h3>
+    <p className="text-sm text-muted-foreground">Card description</p>
+  </div>
+  <div className="p-6 pt-0">
+    {/* Card content */}
+  </div>
+  <div className="flex items-center p-6 pt-0">
+    <Button className="w-full">Action</Button>
+  </div>
+</div>
+```
+
+### Navigation Component from Figma
+```tsx
+// Figma Navigation Frame
+<nav className="flex items-center justify-between p-4">
+  <div className="flex items-center space-x-4">
+    <Logo className="h-8 w-8" />
+    <div className="hidden md:flex space-x-6">
+      {navigationItems.map((item) => (
+        <a key={item.name} href={item.href} className="text-sm font-medium">
+          {item.name}
+        </a>
+      ))}
+    </div>
+  </div>
+  <div className="flex items-center space-x-4">
+    <ThemeToggle />
+    <Button variant="outline">Get Started</Button>
+  </div>
+</nav>
+```
+
+This design system ensures consistency, accessibility, and maintainability across all Figma implementations.
