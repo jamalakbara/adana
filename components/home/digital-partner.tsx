@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { SectionContainer } from "@/components/ui/section-container";
 import { Typography } from "@/components/ui/typography";
-import { AnimatedButton } from "@/components/ui/animated-button";
 
 const imgImage265 = "https://s3-alpha-sig.figma.com/img/1b36/d851/62005bd1ffa39c21001b3d7c9f6200f4?Expires=1760313600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=rQzdy--4cZxepGPh8k5Ijj3vgTIa~Xw~QshZ~-U5sVP3j2EBaGwxHPzwRQXMGuqxBQNQDaFZ1iSUGtcB734nb3How0aSClKqloOG~-lEx1dlQ-CDc2TEYOhjBcMbvwmCmcuzSH5mx4FVlDDnVQH9A~g64m6Hml29h1agBoEq1eth39MkUTm3R5IaGkYbXdJZXYZ-zQFDNVNkxHK671y-bswXD0vpqXRLtn4nyCYvTUdjmCTGLmxCPwDN9OPJ9t0l5xMX~nEifZ0I73RP4oVi5Qspk62l87AOv8FD8WgxDk4Djs3~3yUBIdhbQjkzfudhb4s8bUgBIHX7nlSDyxyv2g__";
 const imgPowerBiLogo1 = "https://s3-alpha-sig.figma.com/img/49ff/4fa2/c9e9f64e7769b8dc6246fb305011c527?Expires=1760313600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=oF3ub1wvv3rSjzK4R5OSX33OmgoWz~rDWGwNIFITTk6ogEkMP9Ol~UIw6hRCQCxUBRA4vCjjKVkpRtgiuTzX9AAVapTnO4thl~dLWdasfrMh8riX~gvsgJfFlAFPVObmIN9XGIEjYOBKqwckXrFVzKHHHgKvkNJ6jfS~XZuA2cnp4MYim-ljHjkB-4PWW-YEjAjd9wMr8THH1G-0kpzxuKFeBwW7xPggotYCcSWpDQwuAy9u-rXbxMhDHEo9I4lLSYkWM3fM1JAfbmfSJXp-zcvwvCd8MihwuOXJXyGurKj7kvxsE2hcg0TsHhHE30dq2Hmeq8ebzmoo3Yx6y1YAWA__";
@@ -55,13 +54,13 @@ function PartnerTag({ label, isActive = false, onClick }: PartnerTagProps) {
   return (
     <button
       onClick={onClick}
-      className={`px-6 py-[15px] rounded-[100px] border border-[#DEDACF] transition-all duration-300 cursor-pointer transform hover:scale-105 active:scale-95 ${
+      className={`px-6 py-[15px] rounded-[100px] border border-[#DEDACF] transition-all duration-300 cursor-pointer transform hover:scale-[1.02] active:scale-[0.98] relative ${
         isActive
-          ? 'bg-[#334e4d] text-[#FCFCF4] font-medium shadow-lg'
-          : 'bg-[#FCFCF4] text-[#646464] font-normal hover:bg-[#f5f5ed] hover:shadow-md'
+          ? 'bg-[#334e4d] text-[#FCFCF4] font-medium shadow-md'
+          : 'bg-[#FCFCF4] text-[#646464] font-normal hover:bg-[#f5f5ed] hover:shadow-sm hover:border-[#c8c4b3]'
       }`}
     >
-      <p className="font-['Public_Sans'] leading-[normal] text-[14px] sm:text-[16px] whitespace-nowrap">{label}</p>
+      <p className="font-['Public_Sans'] leading-[normal] text-[14px] sm:text-[16px] whitespace-nowrap relative z-10">{label}</p>
     </button>
   );
 }
@@ -92,9 +91,10 @@ export function DigitalPartner() {
   const [activePartner, setActivePartner] = useState<string>("Social Partner");
 
   const currentPartners = partnerData[activePartner as keyof typeof partnerData] || [];
+  const isSmallList = currentPartners.length <= 3;
 
   return (
-    <SectionContainer background="light" padding="xl" maxWidth="xl" nodeId="213-124" className="overflow-hidden">
+    <SectionContainer background="light" padding="xl" maxWidth="xl" nodeId="213-124">
         {/* Section title */}
         <div className="text-center mb-[16px]">
           <Typography
@@ -110,7 +110,7 @@ export function DigitalPartner() {
         </div>
 
         {/* Main headline */}
-        <div className="text-center mb-[80px] flex justify-center">
+        <div className="text-center mb-[24px] flex justify-center">
           <h1
             className="font-['Public_Sans'] text-[#1E1E1E] text-center text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] font-normal leading-normal w-full max-w-full sm:max-w-[600px] md:max-w-[700px] lg:max-w-[800px] xl:max-w-[888px] animate-fadeInUp"
             data-node-id="115:10782"
@@ -126,14 +126,19 @@ export function DigitalPartner() {
 
         {/* Partner tags */}
         <div
-          className="mb-[40px] sm:mb-[60px] md:mb-[80px] animate-fadeInUp -mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-hide"
+          className="mb-[46px] sm:mb-[60px] md:mb-[80px] animate-fadeInUp sm:relative"
           style={{
-            animationDelay: '0.6s',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none'
+            animationDelay: '0.6s'
           }}
         >
-          <div className="flex sm:flex-wrap justify-center sm:justify-center min-w-max sm:min-w-0">
+          <div className="absolute left-0 right-0 sm:relative sm:left-auto sm:right-auto">
+            <div className="flex sm:flex-wrap sm:justify-center overflow-x-auto scrollbar-hide sm:overflow-visible px-4 sm:px-0"
+                 style={{
+                   scrollbarWidth: 'none',
+                   msOverflowStyle: 'none',
+                   maskImage: 'linear-gradient(to right, transparent 0%, black 8px, black calc(100% - 8px), transparent 100%)',
+                   WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 8px, black calc(100% - 8px), transparent 100%)'
+                 }}>
             {Object.keys(partnerData).map((partner, index) => (
               <div
                 key={partner}
@@ -151,23 +156,37 @@ export function DigitalPartner() {
             ))}
           </div>
         </div>
+        </div>
 
         {/* Partner cards grid */}
         <div
-          className="flex justify-center animate-fadeInUp"
+          className="flex justify-center animate-fadeInUp pt-[120px] sm:pt-0 sm:relative"
           style={{
             animationDelay: '0.8s'
           }}
         >
-          <div className="flex flex-wrap justify-center gap-4 sm:gap-5 md:gap-6 max-w-4xl">
-            {currentPartners.map((partner, index) => (
-              <PartnerCard
-                key={index}
-                imageSrc={partner.src}
-                alt={partner.alt}
-                index={index}
-              />
-            ))}
+          <div className={`absolute left-0 right-0 sm:relative sm:left-auto sm:right-auto ${isSmallList ? 'flex justify-center' : ''}`}>
+            <div className={`flex ${isSmallList ? 'justify-center' : 'sm:flex-wrap sm:justify-center'} gap-4 sm:gap-5 md:gap-6 ${isSmallList ? '' : 'overflow-x-auto scrollbar-hide sm:overflow-visible px-4 sm:px-0'}`}
+                 style={{
+                   scrollbarWidth: 'none',
+                   msOverflowStyle: 'none'
+                 }}>
+              {currentPartners.map((partner, index) => (
+                <div
+                  key={index}
+                  className="animate-fadeInUp flex-shrink-0"
+                  style={{
+                    animationDelay: `${0.8 + index * 0.1}s`
+                  }}
+                >
+                  <PartnerCard
+                    imageSrc={partner.src}
+                    alt={partner.alt}
+                    index={index}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 

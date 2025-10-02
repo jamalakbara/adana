@@ -64,7 +64,7 @@ export function CtaSection() {
           </div>
 
           {/* Right side - Content */}
-          <div className="lg:w-2/3 flex flex-col justify-center items-center lg:items-start" style={{
+          <div className="lg:w-2/3 flex flex-col justify-center items-center lg:items-start text-center lg:text-left" style={{
             animation: isVisible ? 'slideInRight 0.8s ease-out 0.6s both' : 'none'
           }}>
             <Typography
