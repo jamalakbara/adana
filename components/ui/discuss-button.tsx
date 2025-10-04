@@ -12,7 +12,7 @@ export function DiscussButton() {
       animationType="scale"
       size="md"
     >
-      Let's Discuss
+      Let&apos;s Discuss
     </AnimatedButton>
   );
 }
