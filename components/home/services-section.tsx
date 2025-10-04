@@ -12,12 +12,12 @@ export function ServicesSection() {
   return (
     <SectionContainer background="light" padding="xl" maxWidth="xl" nodeId="201:94">
       {/* Section header */}
-      <div className="mb-[40px] sm:mb-[60px] md:mb-[80px]">
-        <Typography variant="section-label" nodeId="115:10796" className="mb-[16px]">
+      <div className="mb-[58px]">
+        <Typography variant="section-label" nodeId="115:10796" className="mb-[12px]">
           Our Service
         </Typography>
 
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start">
           <div>
             <Typography variant="section-title" className="w-full max-w-full sm:max-w-[500px] md:max-w-[546px]" nodeId="115:10781">
               What We Offer

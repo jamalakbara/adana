@@ -5,6 +5,7 @@ import { AboutSection } from "@/components/home/about-section";
 import { ServicesSection } from "@/components/home/services-section";
 import { DigitalPartner } from "@/components/home/digital-partner";
 import { CtaSection } from "@/components/home/cta-section";
+import { Footer } from "@/components/home/footer";
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
         <DigitalPartner />
         <CtaSection />
       </div>
+      <Footer />
     </div>
   );
 }

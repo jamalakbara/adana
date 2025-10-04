@@ -21,9 +21,9 @@ export function AboutSection() {
         </div>
 
         {/* Right side - Content */}
-        <div className="flex-1 flex flex-col justify-center">
+        <div className="flex-1 flex flex-col justify-between">
           <div className="space-y-[16px]">
-            <Typography variant="section-label" nodeId="115:10870" className="mb-[16px]">
+            <Typography variant="section-label" nodeId="115:10870" className="mb-[12px]">
               About Us
             </Typography>
 
@@ -31,7 +31,7 @@ export function AboutSection() {
               Performance and Media Marketing Agency Which Aim to Help Industries
             </Typography>
 
-            <Typography variant="section-description" style={{ width: "100%" }} nodeId="115:10871">
+            <Typography variant="section-description" style={{ width: "100%" }} className="mt-[50px] space-y-4" nodeId="115:10871">
               <p>
                 Lorem ipsum dolor sit amet consectetur. At molestie elit mauris scelerisque sed in. Nisl cursus tristique interdum donec. Euismod aenean non quis suspendisse. Mattis id aliquam purus nibh vel urna sed.
               </p>

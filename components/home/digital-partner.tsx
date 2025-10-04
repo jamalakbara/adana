@@ -73,7 +73,7 @@ interface PartnerCardProps {
 function PartnerCard({ imageSrc, alt, index = 0 }: PartnerCardProps & { index?: number }) {
   return (
     <div
-      className="bg-[#FCFCF4] h-[70px] sm:h-[80px] md:h-[90px] w-[160px] sm:w-[180px] md:w-[204px] rounded-lg flex items-center justify-center transition-all duration-500 hover:shadow-lg hover:scale-105 hover:bg-white animate-fadeInUp"
+      className="bg-[#FCFCF4] h-[60px] sm:h-[70px] md:h-[90px] w-[120px] sm:w-[140px] md:w-[204px] rounded-lg flex items-center justify-center transition-all duration-500 hover:shadow-lg hover:scale-105 hover:bg-white animate-fadeInUp flex-shrink-0"
       style={{
         animationDelay: `${index * 0.1}s`
       }}
@@ -81,7 +81,7 @@ function PartnerCard({ imageSrc, alt, index = 0 }: PartnerCardProps & { index?: 
       <img
         src={imageSrc}
         alt={alt}
-        className="max-h-[40px] max-w-[152px] object-contain transition-transform duration-300 hover:scale-110"
+        className="max-h-[30px] sm:max-h-[35px] md:max-h-[40px] max-w-[100px] sm:max-w-[120px] md:max-w-[152px] object-contain transition-transform duration-300 hover:scale-110"
       />
     </div>
   );
@@ -96,7 +96,7 @@ export function DigitalPartner() {
   return (
     <SectionContainer background="light" padding="xl" maxWidth="xl" nodeId="213-124">
         {/* Section title */}
-        <div className="text-center mb-[16px]">
+        <div className="text-center mb-[12px]">
           <Typography
             variant="section-label"
             className="text-center animate-fadeInDown"
@@ -110,10 +110,11 @@ export function DigitalPartner() {
         </div>
 
         {/* Main headline */}
-        <div className="text-center mb-[24px] flex justify-center">
-          <h1
-            className="font-['Public_Sans'] text-[#1E1E1E] text-center text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] font-normal leading-normal w-full max-w-full sm:max-w-[600px] md:max-w-[700px] lg:max-w-[800px] xl:max-w-[888px] animate-fadeInUp"
-            data-node-id="115:10782"
+        <div className="text-center mb-[32px] flex justify-center">
+          <Typography
+            variant="section-title"
+            className="text-center animate-fadeInUp w-full max-w-full sm:max-w-[600px] md:max-w-[700px] lg:max-w-[800px] xl:max-w-[888px]"
+            nodeId="115:10782"
             style={{
               animationDelay: '0.4s'
             }}
@@ -121,12 +122,12 @@ export function DigitalPartner() {
             Your Trusted Digital Partner for
             <br />
             Your Digital Transformation
-          </h1>
+          </Typography>
         </div>
 
         {/* Partner tags */}
         <div
-          className="mb-[46px] sm:mb-[60px] md:mb-[80px] animate-fadeInUp sm:relative"
+          className="mb-[50px] animate-fadeInUp sm:relative"
           style={{
             animationDelay: '0.6s'
           }}
@@ -166,10 +167,12 @@ export function DigitalPartner() {
           }}
         >
           <div className={`absolute left-0 right-0 sm:relative sm:left-auto sm:right-auto ${isSmallList ? 'flex justify-center' : ''}`}>
-            <div className={`flex ${isSmallList ? 'justify-center' : 'sm:flex-wrap sm:justify-center'} gap-4 sm:gap-5 md:gap-6 ${isSmallList ? '' : 'overflow-x-auto scrollbar-hide sm:overflow-visible px-4 sm:px-0'}`}
+            <div className={`flex ${isSmallList ? 'justify-center' : 'sm:flex-wrap sm:justify-center'} gap-4 sm:gap-5 md:gap-6 overflow-x-auto scrollbar-hide sm:overflow-visible px-4 sm:px-0`}
                  style={{
                    scrollbarWidth: 'none',
-                   msOverflowStyle: 'none'
+                   msOverflowStyle: 'none',
+                   maskImage: 'linear-gradient(to right, transparent 0%, black 8px, black calc(100% - 8px), transparent 100%)',
+                   WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 8px, black calc(100% - 8px), transparent 100%)'
                  }}>
               {currentPartners.map((partner, index) => (
                 <div

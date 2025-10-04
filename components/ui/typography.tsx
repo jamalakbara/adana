@@ -24,9 +24,11 @@ export function Typography({ children, variant, className = "", style, nodeId }:
   
   const mergedStyle = { ...style };
 
+  const Tag = variant === "section-title" ? "h1" : "div";
+
   return (
-    <div className={`${baseClasses} ${variantClasses[variant]} ${className}`} style={mergedStyle} data-node-id={nodeId}>
+    <Tag className={`${baseClasses} ${variantClasses[variant]} ${className}`} style={mergedStyle} data-node-id={nodeId}>
       {children}
-    </div>
+    </Tag>
   );
 }
