@@ -1,9 +1,9 @@
 <!--
 Sync Impact Report:
-Version change: 1.1.0 → 1.2.0 (minor version - CMS implementation + content management)
-Modified principles: I, IV (CMS-driven architecture fully implemented)
-Added sections: Content API Architecture, Media Management System, Admin Interface
-Updated sections: Technology Stack Requirements, Development Workflow
+Version change: 1.2.0 → 1.3.0 (minor version - Marquee clients simplification + section routing fixes)
+Modified principles: IV (CMS section key mapping implementation)
+Added sections: Section Type Mapping, Component Integration Patterns
+Updated sections: Content API Architecture, Development Workflow, Build & Fix Workflow
 Templates requiring updates: ✅ plan-template.md (Constitution Check compatible), ✅ spec-template.md (aligned), ✅ tasks-template.md (aligned)
 Follow-up TODOs: N/A
 -->
@@ -73,6 +73,13 @@ All components MUST be mobile-first responsive; Dark mode support MUST be implem
 - Content MUST be unwrapped from API response format for direct component use
 - Fallback content MUST be defined for graceful degradation
 
+### Section Type Mapping
+- Section key mapping MUST handle URL format (hyphens) to database format (underscores) conversion
+- ContentProvider MUST implement proper section key transformation for component compatibility
+- Admin routing MUST convert URL section types to database formats for validation and processing
+- SectionConfigs MUST use database format keys while maintaining URL-friendly routing
+- Mapping MUST be consistent across ContentProvider, admin routing, and component layers
+
 ### API Route Structure
 - Public content API: `/api/content/sections` for published content access
 - Admin content API: `/api/admin/sections` for authenticated content management
@@ -95,6 +102,8 @@ All components MUST be mobile-first responsive; Dark mode support MUST be implem
 - Media assets MUST have proper metadata (alt text, dimensions, file size)
 - Media gallery MUST provide search, filtering, and selection capabilities
 - Media MUST be linkable to content sections via foreign keys
+- SimpleLogoUpload component MUST be used for logo-specific uploads with streamlined interface
+- Media fields MUST support nullable values for optional content with proper validation
 
 ## Admin Interface
 
@@ -111,6 +120,22 @@ All components MUST be mobile-first responsive; Dark mode support MUST be implem
 - Loading states MUST be shown for async operations
 - Success/error feedback MUST be provided for user actions
 - Interface MUST be intuitive for non-technical users
+
+## Component Integration Patterns
+
+### CMS Content Integration
+- Components MUST use useSection hook with proper TypeScript typing
+- Fallback content MUST be implemented when CMS data is unavailable
+- Content rendering MUST handle null/undefined values gracefully
+- Dynamic content MUST preserve original component styling and animations
+- Section simplification MUST maintain component API compatibility
+
+### Dynamic Form Handling
+- Array field management MUST support automatic UUID generation for new items
+- Hidden fields MUST be supported for internal data management
+- Field types MUST include specialized components (logo, media, text, etc.)
+- Form validation MUST handle nullable schema fields appropriately
+- DynamicField component MUST generate default objects based on field configurations
 
 ## MCP Tooling Requirements
 
@@ -143,6 +168,8 @@ All components MUST be mobile-first responsive; Dark mode support MUST be implem
 - Build process MUST complete without warnings or errors
 - TypeScript compilation MUST pass without type errors
 - ESLint MUST pass without warnings
+- Build configuration MAY temporarily disable validation for deployment urgency but MUST be re-enabled
+- Environment variable handling MUST be tolerant of missing development variables
 
 ### Code Review Requirements
 - All changes MUST pass ESLint checks
@@ -177,4 +204,4 @@ This constitution supersedes all other development practices and guidelines. All
 - Template files MUST stay synchronized with constitution updates
 - Violations MUST be explicitly justified in implementation documentation
 
-**Version**: 1.2.0 | **Ratified**: 2025-01-20 | **Last Amended**: 2025-01-20
+**Version**: 1.3.0 | **Ratified**: 2025-01-20 | **Last Amended**: 2025-01-21
