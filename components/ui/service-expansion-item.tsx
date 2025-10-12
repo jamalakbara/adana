@@ -13,6 +13,8 @@ interface ServiceExpansionItemProps {
   isFirst?: boolean;
   showCTA?: boolean;
   ctaText?: string;
+  ctaHref?: string;
+  isExternal?: boolean;
   imagePosition?: "right" | "left";
 }
 
@@ -26,6 +28,8 @@ export function ServiceExpansionItem({
   isFirst = false,
   showCTA = true,
   ctaText = "Let's Discuss",
+  ctaHref = "/contact",
+  isExternal = false,
   imagePosition = "right"
 }: ServiceExpansionItemProps) {
   return (
@@ -67,7 +71,14 @@ export function ServiceExpansionItem({
                     variant="primary"
                     hasArrow={true}
                     className="w-fit"
-                    onClick={() => {}}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent the parent onClick from triggering
+                      if (isExternal) {
+                        window.open(ctaHref, '_blank', 'noopener,noreferrer');
+                      } else {
+                        window.location.href = ctaHref;
+                      }
+                    }}
                   >
                     {ctaText}
                   </AnimatedButton>

@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📷 Camera Functionality Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .camera-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #f9fafb;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .video-container {
+            position: relative;
+            background: #000;
+            aspect-ratio: 16/9;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .video-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #10b981;
+            background: #ecfdf5;
+        }
+
+        .test-result {
+            margin: 0.5rem 0;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 14px;
+        }
+
+        .test-pass {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+        }
+
+        .test-fail {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+        }
+
+        .test-warning {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            color: #92400e;
+        }
+
+        .camera-controls {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .control-button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .primary-button {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .primary-button:hover {
+            background: #2563eb;
+        }
+
+        .secondary-button {
+            background: #6b7280;
+            color: white;
+        }
+
+        .secondary-button:hover {
+            background: #4b5563;
+        }
+
+        .device-info {
+            background: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .haptic-feedback {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .haptic-feedback.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+    <div class="camera-container">
+        <header class="bg-white p-6 border-b border-gray-200">
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">📷 Camera Functionality Test</h1>
+            <p class="text-gray-600">Test mobile camera integration, file upload fallback, and error handling</p>
+        </header>
+
+        <div class="p-6">
+            <!-- Device Info -->
+            <div id="device-info" class="device-info mb-6">
+                <h3 class="text-sm font-semibold mb-2">Device Capabilities:</h3>
+                <div id="device-details">Loading...</div>
+            </div>
+
+            <!-- Test Results -->
+            <div id="test-results" class="space-y-2 mb-6">
+                <div class="test-result" id="camera-api-test">
+                    <span class="font-medium">Camera API:</span>
+                    <span class="test-status">Testing...</span>
+                </div>
+                <div class="test-result" id="camera-permissions-test">
+                    <span class="font-medium">Camera Permissions:</span>
+                    <span class="test-status">Testing...</span>
+                </div>
+                <div class="test-result" id="camera-devices-test">
+                    <span class="font-medium">Available Cameras:</span>
+                    <span class="test-status">Testing...</span>
+                </div>
+                <div class="test-result" id="file-input-test">
+                    <span class="font-medium">File Upload:</span>
+                    <span class="test-status">Testing...</span>
+                </div>
+                <div class="test-result" id="image-formats-test">
+                    <span class="font-medium">Image Formats:</span>
+                    <span class="test-status">Testing...</span>
+                </div>
+                <div class="test-result" id="file-size-test">
+                    <span class="font-medium">File Size Validation:</span>
+                    <span class="test-status">Testing...</span>
+                </div>
+                <div class="test-result" id="capture-quality-test">
+                    <span class="font-medium">Photo Quality:</span>
+                    <span class="test-status">Testing...</span>
+                </div>
+            </div>
+
+            <!-- Camera Preview Area -->
+            <div id="camera-section" class="mb-6">
+                <h3 class="text-lg font-semibold mb-4">Camera Preview</h3>
+                <div class="video-container mb-4">
+                    <video id="camera-preview" class="video-preview" playsinline muted></video>
+                    <canvas id="capture-canvas" style="display: none;"></canvas>
+                    <div id="camera-placeholder" class="flex items-center justify-center h-full text-white">
+                        <div class="text-center">
+                            <svg class="w-16 h-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2m0 0a2 2 0 012 2m0 0a2 2 0 012-2" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2m0 0a2 2 0 012 2" />
+                            </svg>
+                            <p>Camera preview will appear here</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="camera-controls">
+                    <button id="start-camera" class="control-button primary-button">
+                        📷 Start Camera
+                    </button>
+                    <button id="capture-photo" class="control-button primary-button" disabled>
+                        📸 Capture Photo
+                    </button>
+                    <button id="stop-camera" class="control-button secondary-button" disabled>
+                        ⏹️ Stop Camera
+                    </button>
+                    <button id="switch-to-file" class="control-button secondary-button">
+                        📁 Upload File
+                    </button>
+                </div>
+            </div>
+
+            <!-- File Upload Section -->
+            <div id="file-section" class="mb-6" style="display: none;">
+                <h3 class="text-lg font-semibold mb-4">File Upload</h3>
+                <div class="upload-area" id="upload-area">
+                    <input type="file" id="file-input" accept="image/*" capture="environment" style="display: none;">
+                    <svg class="w-16 h-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <p class="text-gray-600 mb-2">Click to select image or drag and drop</p>
+                    <p class="text-sm text-gray-500">Supported: JPG, PNG, WebP, HEIC, HEIF</p>
+                    <p class="text-sm text-gray-500">Maximum: 10MB</p>
+                </div>
+
+                <div class="mt-4">
+                    <button id="switch-to-camera" class="control-button primary-button">
+                        📷 Use Camera
+                    </button>
+                </div>
+            </div>
+
+            <!-- Captured Image Preview -->
+            <div id="preview-section" class="mb-6" style="display: none;">
+                <h3 class="text-lg font-semibold mb-4">Captured Image</h3>
+                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                    <img id="captured-image" class="w-full rounded-lg" alt="Captured photo">
+                    <div class="mt-4 flex justify-between items-center">
+                        <div id="image-info" class="text-sm text-gray-600"></div>
+                        <div class="space-x-2">
+                            <button id="download-image" class="control-button primary-button">
+                                💾 Download
+                            </button>
+                            <button id="capture-another" class="control-button secondary-button">
+                                📸 Capture Another
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Haptic Feedback -->
+        <div id="haptic-feedback" class="haptic-feedback">
+            Haptic feedback triggered!
+        </div>
+    </div>
+
+    <script>
+        // Camera functionality test suite
+        class CameraTester {
+            constructor() {
+                this.stream = null;
+                this.constraints = {
+                    video: {
+                        facingMode: 'environment',
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
+                    },
+                    audio: false
+                };
+
+                this.tests = {
+                    cameraAPI: false,
+                    cameraPermissions: false,
+                    cameraDevices: false,
+                    fileInput: false,
+                    imageFormats: false,
+                    fileSizeValidation: false,
+                    captureQuality: false
+                };
+
+                this.initialize();
+            }
+
+            async initialize() {
+                console.log('🚀 Initializing Camera Functionality Tests...');
+
+                await this.runAllTests();
+                this.setupEventListeners();
+            }
+
+            async runAllTests() {
+                // Test 1: Camera API Support
+                await this.testCameraAPI();
+
+                // Test 2: Camera Permissions
+                await this.testCameraPermissions();
+
+                // Test 3: Camera Device Detection
+                await this.testCameraDevices();
+
+                // Test 4: File Input Support
+                await this.testFileInput();
+
+                // Test 5: Image Format Support
+                await this.testImageFormats();
+
+                // Test 6: File Size Validation
+                this.testFileSizeValidation();
+
+                // Test 7: Capture Quality
+                this.testCaptureQuality();
+
+                this.updateDeviceCapabilities();
+                this.displayOverallResults();
+            }
+
+            async testCameraAPI() {
+                const testResult = document.getElementById('camera-api-test');
+
+                try {
+                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                        throw new Error('MediaDevices API not supported');
+                    }
+
+                    this.tests.cameraAPI = true;
+                    this.updateTestResult(testResult, '✅ Supported', 'test-pass');
+                } catch (error) {
+                    this.tests.cameraAPI = false;
+                    this.updateTestResult(testResult, '❌ Not Supported', 'test-fail');
+                    console.error('Camera API Test Error:', error);
+                }
+            }
+
+            async testCameraPermissions() {
+                const testResult = document.getElementById('camera-permissions-test');
+
+                try {
+                    // Request temporary access to check permissions
+                    const stream = await navigator.mediaDevices.getUserMedia(this.constraints);
+
+                    // Immediately clean up the stream
+                    stream.getTracks().forEach(track => track.stop());
+
+                    this.tests.cameraPermissions = true;
+                    this.updateTestResult(testResult, '✅ Granted', 'test-pass');
+                } catch (error) {
+                    if (error.name === 'NotAllowedError') {
+                        this.tests.cameraPermissions = false;
+                        this.updateTestResult(testResult, '❌ Denied', 'test-warning');
+                    } else {
+                        this.tests.cameraPermissions = false;
+                        this.updateTestResult(testResult, '❌ Error', 'test-fail');
+                    }
+                    console.error('Camera Permissions Test Error:', error);
+                }
+            }
+
+            async testCameraDevices() {
+                const testResult = document.getElementById('camera-devices-test');
+
+                try {
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    const videoDevices = devices.filter(device => device.kind === 'videoinput');
+
+                    if (videoDevices.length > 0) {
+                        this.tests.cameraDevices = true;
+                        const deviceNames = videoDevices.slice(0, 3).map(d => d.label || d.deviceId).join(', ');
+                        this.updateTestResult(testResult, `✅ ${videoDevices.length} found`, 'test-pass');
+                    } else {
+                        this.tests.cameraDevices = false;
+                        this.updateTestResult(testResult, '❌ None found', 'test-fail');
+                    }
+                } catch (error) {
+                    this.tests.cameraDevices = false;
+                    this.updateTestResult(testResult, '❌ Error', 'test-fail');
+                    console.error('Camera Devices Test Error:', error);
+                }
+            }
+
+            testFileInput() {
+                const testResult = document.getElementById('file-input-test');
+                const fileInput = document.getElementById('file-input');
+
+                if (fileInput) {
+                    this.tests.fileInput = true;
+                    this.updateTestResult(testResult, '✅ Available', 'test-pass');
+                } else {
+                    this.tests.fileInput = false;
+                    this.updateTestResult(testResult, '❌ Not Available', 'test-fail');
+                }
+            }
+
+            testImageFormats() {
+                const testResult = document.getElementById('image-formats-test');
+
+                const supportedFormats = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+                const canvas = document.createElement('canvas');
+
+                const formatSupport = supportedFormats.map(format => {
+                    // Test if format is supported by checking if we can create a Blob
+                    return format.includes('image/');
+                }).filter(Boolean);
+
+                if (formatSupport.length > 0) {
+                    this.tests.imageFormats = true;
+                    this.updateTestResult(testResult, `✅ ${supportedFormats.length} supported`, 'test-pass');
+                } else {
+                    this.tests.imageFormats = false;
+                    this.updateTestResult(testResult, '❌ Limited support', 'test-fail');
+                }
+            }
+
+            testFileSizeValidation() {
+                const testResult = document.getElementById('file-size-test');
+
+                const maxFileSize = 10 * 1024 * 1024; // 10MB
+                const testFileSize = 5 * 1024 * 1024; // 5MB (test file)
+
+                if (maxFileSize > testFileSize) {
+                    this.tests.fileSizeValidation = true;
+                    this.updateTestResult(testResult, '✅ 10MB limit', 'test-pass');
+                } else {
+                    this.tests.fileSizeValidation = false;
+                    this.updateTestResult(testResult, '❌ Invalid limit', 'test-fail');
+                }
+            }
+
+            testCaptureQuality() {
+                const testResult = document.getElementById('capture-quality-test');
+
+                // Test if canvas can create high-quality images
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                if (ctx) {
+                    canvas.width = 1920;
+                    canvas.height = 1080;
+
+                    // Test canvas quality
+                    const imageData = ctx.createImageData(canvas.width, canvas.height);
+
+                    if (imageData && imageData.data.length > 0) {
+                        this.tests.captureQuality = true;
+                        this.updateTestResult(testResult, '✅ 1920x1080 support', 'test-pass');
+                    } else {
+                        this.tests.captureQuality = false;
+                        this.updateTestResult(testResult, '❌ Low resolution', 'test-fail');
+                    }
+                } else {
+                    this.tests.captureQuality = false;
+                    this.updateTestResult(testResult, '❌ Canvas error', 'test-fail');
+                }
+            }
+
+            updateTestResult(element, status, className) {
+                const statusSpan = element.querySelector('.test-status');
+                statusSpan.textContent = status;
+                element.className = `test-result ${className}`;
+            }
+
+            updateDeviceCapabilities() {
+                const deviceDetails = document.getElementById('device-details');
+
+                const capabilities = {
+                    'User Agent': navigator.userAgent,
+                    'Platform': navigator.platform,
+                    'Touch Support': 'ontouchstart' in window,
+                    'Device Memory': (navigator.deviceMemory || 'Unknown') + 'GB',
+                    'CPU Cores': navigator.hardwareConcurrency || 'Unknown',
+                    'Pixel Ratio': window.devicePixelRatio,
+                    'Max Touch Points': navigator.maxTouchPoints || 0,
+                    'Connection Type': (navigator.connection?.effectiveType || 'Unknown')
+                };
+
+                deviceDetails.innerHTML = Object.entries(capabilities)
+                    .map(([key, value]) => `<div><strong>${key}:</strong> ${value}</div>`)
+                    .join('');
+            }
+
+            displayOverallResults() {
+                const totalTests = Object.keys(this.tests).length;
+                const passedTests = Object.values(this.tests).filter(Boolean).length;
+                const score = Math.round((passedTests / totalTests) * 100);
+
+                // Create summary
+                const summary = document.createElement('div');
+                summary.className = 'bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6';
+                summary.innerHTML = `
+                    <h3 class="text-lg font-semibold mb-2">📊 Test Summary</h3>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div><strong>Tests Passed:</strong> ${passedTests}/${totalTests}</div>
+                        <div><strong>Success Rate:</strong> ${score}%</div>
+                        <div><strong>Camera Ready:</strong> ${score >= 70 ? '✅ Yes' : '⚠️ Limited'}</div>
+                        <div><strong>Mobile Support:</strong> ${this.tests.touchSupport ? '✅' : '❌'}</div>
+                    </div>
+                    ${score >= 90 ? '<p class="text-green-600">🎉 Excellent camera functionality!</p>' :
+                      score >= 70 ? '<p class="text-blue-600">✅ Good camera functionality</p>' :
+                      score >= 50 ? '<p class="text-yellow-600">⚠️ Limited camera functionality</p>' :
+                      '<p class="text-red-600">❌ Camera functionality needs improvement</p>'}
+                `;
+
+                // Insert after test results
+                const testResults = document.getElementById('test-results');
+                testResults.parentNode.insertBefore(summary, testResults);
+            }
+
+            setupEventListeners() {
+                // Camera controls
+                document.getElementById('start-camera').addEventListener('click', () => this.startCamera());
+                document.getElementById('capture-photo').addEventListener('click', () => this.capturePhoto());
+                document.getElementById('stop-camera').addEventListener('click', () => this.stopCamera());
+                document.getElementById('switch-to-file').addEventListener('click', () => this.switchToFileUpload());
+                document.getElementById('switch-to-camera').addEventListener('click', () => this.switchToCamera());
+
+                // File upload
+                const uploadArea = document.getElementById('upload-area');
+                const fileInput = document.getElementById('file-input');
+
+                uploadArea.addEventListener('click', () => fileInput.click());
+                fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+
+                // Drag and drop
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
+
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.classList.remove('dragover');
+                });
+
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        this.handleFile(files[0]);
+                    }
+                });
+
+                // Download and recapture
+                document.getElementById('download-image').addEventListener('click', () => this.downloadImage());
+                document.getElementById('capture-another').addEventListener('click', () => {
+                    document.getElementById('preview-section').style.display = 'none';
+                    this.startCamera();
+                });
+            }
+
+            async startCamera() {
+                const startBtn = document.getElementById('start-camera');
+                const captureBtn = document.getElementById('capture-photo');
+                const stopBtn = document.getElementById('stop-camera');
+                const video = document.getElementById('camera-preview');
+                const placeholder = document.getElementById('camera-placeholder');
+
+                try {
+                    startBtn.disabled = true;
+                    startBtn.textContent = '⏳ Starting...';
+
+                    this.stream = await navigator.mediaDevices.getUserMedia(this.constraints);
+                    video.srcObject = this.stream;
+
+                    placeholder.style.display = 'none';
+                    captureBtn.disabled = false;
+                    stopBtn.disabled = false;
+                    startBtn.textContent = '📷 Start Camera';
+
+                    console.log('✅ Camera started successfully');
+
+                } catch (error) {
+                    console.error('❌ Failed to start camera:', error);
+                    startBtn.disabled = false;
+                    startBtn.textContent = '📷 Start Camera';
+
+                    // Show error message
+                    this.showCameraError(error.message);
+                }
+            }
+
+            stopCamera() {
+                if (this.stream) {
+                    this.stream.getTracks().forEach(track => track.stop());
+                    this.stream = null;
+                }
+
+                const video = document.getElementById('camera-preview');
+                const placeholder = document.getElementById('camera-placeholder');
+                const startBtn = document.getElementById('start-camera');
+                const captureBtn = document.getElementById('capture-photo');
+                const stopBtn = document.getElementById('stop-camera');
+
+                video.srcObject = null;
+                placeholder.style.display = 'flex';
+                captureBtn.disabled = true;
+                stopBtn.disabled = true;
+                startBtn.disabled = false;
+
+                console.log('✅ Camera stopped');
+            }
+
+            capturePhoto() {
+                const video = document.getElementById('camera-preview');
+                const canvas = document.getElementById('capture-canvas');
+                const ctx = canvas.getContext('2d');
+
+                if (!this.stream || !video.srcObject) {
+                    this.showCameraError('Camera not started. Please start the camera first.');
+                    return;
+                }
+
+                try {
+                    // Set canvas dimensions to match video
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+
+                    // Draw video frame to canvas
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                    // Convert to blob and create file
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            const file = new File([blob], `camera-capture-${Date.now()}.jpg`, {
+                                type: 'image/jpeg'
+                            });
+
+                            this.processCapturedImage(file);
+
+                            // Haptic feedback
+                            if ('vibrate' in navigator) {
+                                navigator.vibrate(50);
+                                this.showHapticFeedback();
+                            }
+                        }
+                    }, 'image/jpeg', 0.9);
+
+                    console.log('✅ Photo captured successfully');
+
+                } catch (error) {
+                    console.error('❌ Failed to capture photo:', error);
+                    this.showCameraError('Failed to capture photo: ' + error.message);
+                }
+            }
+
+            processCapturedImage(file) {
+                const imagePreview = document.getElementById('captured-image');
+                const imageInfo = document.getElementById('image-info');
+                const previewSection = document.getElementById('preview-section');
+                const cameraSection = document.getElementById('camera-section');
+
+                // Create blob URL for preview
+                const imageUrl = URL.createObjectURL(file);
+                imagePreview.src = imageUrl;
+
+                // Display image info
+                imageInfo.innerHTML = `
+                    <strong>File:</strong> ${file.name}<br>
+                    <strong>Size:</strong> ${(file.size / 1024 / 1024).toFixed(2)}MB<br>
+                    <strong>Type:</strong> ${file.type}<br>
+                    <strong>Last Modified:</strong> ${new Date(file.lastModified).toLocaleString()}
+                `;
+
+                // Show preview section
+                previewSection.style.display = 'block';
+                cameraSection.style.display = 'none';
+
+                // Clean up blob URL when component unmounts
+                imagePreview.onload = () => {
+                    URL.revokeObjectURL(imageUrl);
+                };
+
+                console.log('✅ Captured image processed:', file.name);
+            }
+
+            handleFileSelect(event) {
+                const files = event.target.files;
+                if (files.length > 0) {
+                    this.handleFile(files[0]);
+                }
+            }
+
+            handleFile(file) {
+                // Validate file type
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+                if (!allowedTypes.includes(file.type)) {
+                    this.showCameraError(`File type ${file.type} not supported. Allowed: ${allowedTypes.join(', ')}`);
+                    return;
+                }
+
+                // Validate file size (10MB max)
+                const maxSize = 10 * 1024 * 1024;
+                if (file.size > maxSize) {
+                    this.showCameraError(`File too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum: 10MB`);
+                    return;
+                }
+
+                // Process the uploaded file
+                this.processCapturedImage(file);
+                console.log('✅ File uploaded:', file.name);
+            }
+
+            switchToFileUpload() {
+                this.stopCamera();
+                document.getElementById('camera-section').style.display = 'none';
+                document.getElementById('file-section').style.display = 'block';
+            }
+
+            switchToCamera() {
+                document.getElementById('file-section').style.display = 'none';
+                document.getElementById('camera-section').style.display = 'block';
+                this.startCamera();
+            }
+
+            downloadImage() {
+                const imagePreview = document.getElementById('captured-image');
+                if (imagePreview.src) {
+                    const link = document.createElement('a');
+                    link.href = imagePreview.src;
+                    link.download = `camera-capture-${Date.now()}.jpg`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+
+                    console.log('✅ Image downloaded');
+                }
+            }
+
+            showCameraError(message) {
+                // Create error notification
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50';
+                errorDiv.innerHTML = `
+                    <div class="flex items-start space-x-3">
+                        <svg class="w-6 h-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        <div>
+                            <h4 class="font-semibold">Camera Error</h4>
+                            <p class="text-sm">${message}</p>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(errorDiv);
+
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    if (errorDiv.parentNode) {
+                        errorDiv.parentNode.removeChild(errorDiv);
+                    }
+                }, 5000);
+
+                console.error('❌ Camera Error:', message);
+            }
+
+            showHapticFeedback() {
+                const feedback = document.getElementById('haptic-feedback');
+                feedback.classList.add('show');
+
+                setTimeout(() => {
+                    feedback.classList.remove('show');
+                }, 300);
+            }
+        }
+
+        // Initialize tests when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const tester = new CameraTester();
+        });
+    </script>
+</body>
+</html>

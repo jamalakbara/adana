@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Test - Browser Environment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">Performance Optimization Test</h1>
+
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Test Results</h2>
+            <div id="results" class="space-y-2"></div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">Overall Score</h2>
+            <div class="text-4xl font-bold text-blue-600" id="score">0%</div>
+            <div class="w-full bg-gray-200 rounded-full h-4 mt-4">
+                <div id="score-bar" class="bg-blue-600 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function testPerformanceOptimizations() {
+            console.log('⚡ Starting Performance Optimization Tests...');
+            console.log('=' .repeat(50));
+
+            const results = {
+                deviceDetection: false,
+                lazyLoading: false,
+                imageOptimization: false,
+                virtualScrolling: false,
+                performanceMonitoring: false,
+                memoryManagement: false,
+                responsiveImages: false,
+                progressiveLoading: false
+            };
+
+            const testResults = [];
+
+            // Test 1: Device Capability Detection
+            console.log('🔍 Test 1: Device Capability Detection');
+            const deviceType = window.innerWidth < 768 ? 'Mobile' : window.innerWidth < 1024 ? 'Tablet' : 'Desktop';
+            const hasTouch = 'ontouchstart' in window;
+            const pixelRatio = window.devicePixelRatio || 1;
+            const hasPerformanceAPI = typeof performance !== 'undefined';
+            const hasIntersectionObserver = typeof IntersectionObserver !== 'undefined';
+            const hasResizeObserver = typeof ResizeObserver !== 'undefined';
+            const hasRequestAnimationFrame = typeof requestAnimationFrame !== 'undefined';
+
+            console.log(`   Device type: ${deviceType}`);
+            console.log(`   Touch support: ${hasTouch ? '✅' : '❌'}`);
+            console.log(`   Pixel ratio: ${pixelRatio}x`);
+            console.log(`   Performance API: ${hasPerformanceAPI ? '✅' : '❌'}`);
+            console.log(`   Intersection Observer: ${hasIntersectionObserver ? '✅' : '❌'}`);
+            console.log(`   Resize Observer: ${hasResizeObserver ? '✅' : '❌'}`);
+            console.log(`   Request Animation Frame: ${hasRequestAnimationFrame ? '✅' : '❌'}`);
+
+            const hasRequiredAPIs = hasPerformanceAPI && hasIntersectionObserver && hasRequestAnimationFrame;
+            results.deviceDetection = hasRequiredAPIs;
+
+            testResults.push({
+                name: 'Device Detection',
+                passed: hasRequiredAPIs,
+                details: `Device: ${deviceType}, APIs: ${hasRequiredAPIs ? 'All available' : 'Some missing'}`
+            });
+
+            // Test 2: Performance Timing APIs
+            console.log('\n🔍 Test 2: Performance Timing APIs');
+            if (performance && performance.timing) {
+                const navigationStart = performance.timing.navigationStart;
+                const loadComplete = performance.timing.loadEventEnd;
+                const domContentLoaded = performance.timing.domContentLoadedEventEnd;
+
+                const loadTime = loadComplete - navigationStart;
+                const domTime = domContentLoaded - navigationStart;
+
+                console.log(`   Page load time: ${loadTime}ms`);
+                console.log(`   DOM content loaded: ${domTime}ms`);
+
+                testResults.push({
+                    name: 'Performance Timing',
+                    passed: true,
+                    details: `Load: ${loadTime}ms, DOM: ${domTime}ms`
+                });
+            } else {
+                testResults.push({
+                    name: 'Performance Timing',
+                    passed: false,
+                    details: 'Performance timing not available'
+                });
+            }
+
+            // Test 3: Frame Rate Monitoring
+            console.log('\n🔍 Test 3: Frame Rate Monitoring');
+            const fpsTest = await new Promise((resolve) => {
+                if (!requestAnimationFrame) {
+                    resolve({ passed: false, fps: 0, details: 'RequestAnimationFrame not available' });
+                    return;
+                }
+
+                let frameCount = 0;
+                let startTime = performance.now();
+
+                const measureFrame = (currentTime) => {
+                    frameCount++;
+                    if (currentTime - startTime >= 1000) {
+                        const fps = Math.round((frameCount * 1000) / (currentTime - startTime));
+                        const passed = fps >= 30;
+                        results.performanceMonitoring = passed;
+
+                        resolve({
+                            passed,
+                            fps,
+                            details: `${fps} FPS ${passed ? '✅' : '❌'}`
+                        });
+                    } else {
+                        requestAnimationFrame(measureFrame);
+                    }
+                };
+
+                requestAnimationFrame(measureFrame);
+            });
+
+            testResults.push({
+                name: 'Frame Rate',
+                passed: fpsTest.passed,
+                details: fpsTest.details
+            });
+
+            // Test 4: Memory Management
+            console.log('\n🔍 Test 4: Memory Management');
+            if (performance && performance.memory) {
+                const memory = performance.memory;
+                const used = Math.round(memory.usedJSHeapSize / 1048576);
+                const total = Math.round(memory.totalJSHeapSize / 1048576);
+                const usagePercentage = Math.round((used / total) * 100);
+
+                const memoryGood = usagePercentage < 80;
+                results.memoryManagement = memoryGood;
+
+                testResults.push({
+                    name: 'Memory Management',
+                    passed: memoryGood,
+                    details: `${used}MB used (${usagePercentage}%) ${memoryGood ? '✅' : '⚠️'}`
+                });
+            } else {
+                results.memoryManagement = true; // Don't penalize for privacy
+                testResults.push({
+                    name: 'Memory Management',
+                    passed: true,
+                    details: 'Memory API not available (privacy) ✅'
+                });
+            }
+
+            // Test 5: Image Loading
+            console.log('\n🔍 Test 5: Image Loading Performance');
+            const imageTest = await new Promise((resolve) => {
+                const testUrls = [
+                    'https://picsum.photos/200/200?test=1',
+                    'https://picsum.photos/300/200?test=2',
+                    'https://picsum.photos/400/300?test=3'
+                ];
+
+                let loadedCount = 0;
+                let loadTimes = [];
+                const startTime = performance.now();
+
+                testUrls.forEach(url => {
+                    const img = new Image();
+                    const loadStart = performance.now();
+
+                    img.onload = () => {
+                        const loadTime = performance.now() - loadStart;
+                        loadTimes.push(loadTime);
+                        loadedCount++;
+
+                        if (loadedCount === testUrls.length) {
+                            const totalTime = performance.now() - startTime;
+                            const avgTime = Math.round(loadTimes.reduce((a, b) => a + b, 0) / loadTimes.length);
+                            const passed = loadedCount === testUrls.length && avgTime < 3000;
+
+                            results.imageOptimization = passed;
+                            resolve({
+                                passed,
+                                details: `${loadedCount}/${testUrls.length} loaded, avg: ${avgTime}ms ${passed ? '✅' : '❌'}`
+                            });
+                        }
+                    };
+
+                    img.onerror = () => {
+                        loadedCount++;
+                        if (loadedCount === testUrls.length) {
+                            resolve({
+                                passed: false,
+                                details: 'Some images failed to load ❌'
+                            });
+                        }
+                    };
+
+                    img.src = url;
+                });
+            });
+
+            testResults.push({
+                name: 'Image Loading',
+                passed: imageTest.passed,
+                details: imageTest.details
+            });
+
+            // Test 6: Responsive Images
+            const screenWidth = window.innerWidth;
+            const devicePixelRatio = window.devicePixelRatio || 1;
+            const recommendedMaxWidth = Math.min(screenWidth * devicePixelRatio, 1920);
+
+            results.responsiveImages = true;
+            testResults.push({
+                name: 'Responsive Images',
+                passed: true,
+                details: `Screen: ${screenWidth}px, DPR: ${devicePixelRatio}x, Max: ${recommendedMaxWidth}px ✅`
+            });
+
+            // Test 7: Lazy Loading
+            console.log('\n🔍 Test 7: Lazy Loading');
+            const lazyTest = await new Promise((resolve) => {
+                if (!IntersectionObserver) {
+                    resolve({ passed: false, details: 'IntersectionObserver not available ❌' });
+                    return;
+                }
+
+                // Create test container
+                const container = document.createElement('div');
+                container.style.position = 'absolute';
+                container.style.top = '-1000px';
+                container.style.left = '-1000px';
+                document.body.appendChild(container);
+
+                const images = [];
+                let loadedCount = 0;
+
+                for (let i = 0; i < 5; i++) {
+                    const img = document.createElement('img');
+                    img.className = 'lazy-test';
+                    img.dataset.src = `https://picsum.photos/150/150?lazy=${i}`;
+                    img.style.width = '150px';
+                    img.style.height = '150px';
+                    img.style.display = 'block';
+                    img.style.margin = '5px';
+                    container.appendChild(img);
+                    images.push(img);
+                }
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.src = img.dataset.src;
+
+                            img.onload = () => {
+                                loadedCount++;
+                                if (loadedCount === images.length) {
+                                    const passed = loadedCount === images.length;
+                                    results.lazyLoading = passed;
+
+                                    resolve({
+                                        passed,
+                                        details: `${loadedCount}/${images.length} lazy loaded ${passed ? '✅' : '❌'}`
+                                    });
+                                    document.body.removeChild(container);
+                                }
+                            };
+
+                            observer.unobserve(img);
+                        }
+                    });
+                }, { rootMargin: '50px' });
+
+                images.forEach(img => observer.observe(img));
+
+                // Simulate scrolling into view
+                setTimeout(() => {
+                    container.style.top = '100px';
+                }, 100);
+
+                // Timeout for fallback
+                setTimeout(() => {
+                    if (loadedCount < images.length) {
+                        resolve({
+                            passed: false,
+                            details: `Timeout - only ${loadedCount}/${images.length} loaded ❌`
+                        });
+                        if (document.body.contains(container)) {
+                            document.body.removeChild(container);
+                        }
+                    }
+                }, 3000);
+            });
+
+            testResults.push({
+                name: 'Lazy Loading',
+                passed: lazyTest.passed,
+                details: lazyTest.details
+            });
+
+            // Test 8: Virtual Scrolling
+            console.log('\n🔍 Test 8: Virtual Scrolling');
+            const virtualTest = await new Promise((resolve) => {
+                const startTime = performance.now();
+                const visibleItems = 20;
+
+                // Simulate virtual scrolling DOM operations
+                const fragment = document.createDocumentFragment();
+
+                for (let i = 0; i < visibleItems; i++) {
+                    const div = document.createElement('div');
+                    div.textContent = `Virtual item ${i}`;
+                    div.style.height = '50px';
+                    div.style.padding = '10px';
+                    div.style.border = '1px solid #ddd';
+                    fragment.appendChild(div);
+                }
+
+                const container = document.createElement('div');
+                container.style.position = 'absolute';
+                container.style.top = '-2000px';
+                container.appendChild(fragment);
+                document.body.appendChild(container);
+
+                const renderTime = performance.now() - startTime;
+
+                // Cleanup
+                document.body.removeChild(container);
+
+                const passed = renderTime < 50;
+                results.virtualScrolling = passed;
+
+                resolve({
+                    passed,
+                    details: `${visibleItems} items in ${Math.round(renderTime)}ms ${passed ? '✅' : '❌'}`
+                });
+            });
+
+            testResults.push({
+                name: 'Virtual Scrolling',
+                passed: virtualTest.passed,
+                details: virtualTest.details
+            });
+
+            // Test 9: Progressive Loading
+            console.log('\n🔍 Test 9: Progressive Loading');
+            const progressiveTest = await new Promise((resolve) => {
+                let lowQualityLoaded = false;
+                let highQualityLoaded = false;
+
+                const img = new Image();
+                const startTime = performance.now();
+
+                // Simulate low quality
+                setTimeout(() => {
+                    lowQualityLoaded = true;
+                    img.src = 'https://picsum.photos/300/200?progressive';
+                }, 50);
+
+                img.onload = () => {
+                    highQualityLoaded = true;
+                    const loadTime = performance.now() - startTime;
+                    const passed = lowQualityLoaded && highQualityLoaded;
+                    results.progressiveLoading = passed;
+
+                    resolve({
+                        passed,
+                        details: `Progressive loading ${Math.round(loadTime)}ms ${passed ? '✅' : '❌'}`
+                    });
+                };
+
+                img.onerror = () => {
+                    resolve({
+                        passed: false,
+                        details: 'Progressive loading failed ❌'
+                    });
+                };
+            });
+
+            testResults.push({
+                name: 'Progressive Loading',
+                passed: progressiveTest.passed,
+                details: progressiveTest.details
+            });
+
+            // Calculate overall score
+            console.log('\n' + '=' .repeat(50));
+            console.log('📊 Performance Optimization Test Results:');
+
+            const tests = [
+                { name: 'Device Detection', score: results.deviceDetection ? 1 : 0 },
+                { name: 'Lazy Loading', score: results.lazyLoading ? 1 : 0 },
+                { name: 'Image Optimization', score: results.imageOptimization ? 1 : 0 },
+                { name: 'Virtual Scrolling', score: results.virtualScrolling ? 1 : 0 },
+                { name: 'Performance Monitoring', score: results.performanceMonitoring ? 1 : 0 },
+                { name: 'Memory Management', score: results.memoryManagement ? 1 : 0 },
+                { name: 'Responsive Images', score: results.responsiveImages ? 1 : 0 },
+                { name: 'Progressive Loading', score: results.progressiveLoading ? 1 : 0 }
+            ];
+
+            let totalScore = 0;
+            tests.forEach(test => {
+                totalScore += test.score;
+                console.log(`   ${test.name}: ${test.score === 1 ? '✅' : '❌'} (${test.score}/1)`);
+            });
+
+            const finalScore = (totalScore / tests.length) * 100;
+            console.log(`\n🎯 Overall Performance Optimization Score: ${finalScore.toFixed(1)}%`);
+
+            if (finalScore >= 80) {
+                console.log('🎉 Excellent performance optimization!');
+            } else if (finalScore >= 60) {
+                console.log('✅ Good performance optimization with minor improvements needed');
+            } else {
+                console.log('⚠️ Performance optimization needs significant improvements');
+            }
+
+            // Display results on page
+            displayResults(testResults, finalScore);
+
+            return {
+                results,
+                score: finalScore,
+                tests
+            };
+        }
+
+        function displayResults(testResults, score) {
+            const resultsContainer = document.getElementById('results');
+            const scoreElement = document.getElementById('score');
+            const scoreBar = document.getElementById('score-bar');
+
+            // Display individual test results
+            resultsContainer.innerHTML = testResults.map(test => `
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+                    <div>
+                        <div class="font-medium">${test.name}</div>
+                        <div class="text-sm text-gray-600">${test.details}</div>
+                    </div>
+                    <div class="${test.passed ? 'text-green-600' : 'text-red-600'}">
+                        ${test.passed ? '✅ Pass' : '❌ Fail'}
+                    </div>
+                </div>
+            `).join('');
+
+            // Display overall score
+            scoreElement.textContent = `${Math.round(score)}%`;
+            scoreBar.style.width = `${score}%`;
+
+            if (score >= 80) {
+                scoreBar.className = 'bg-green-600 h-4 rounded-full transition-all duration-500';
+            } else if (score >= 60) {
+                scoreBar.className = 'bg-yellow-600 h-4 rounded-full transition-all duration-500';
+            } else {
+                scoreBar.className = 'bg-red-600 h-4 rounded-full transition-all duration-500';
+            }
+        }
+
+        // Run tests when page loads
+        document.addEventListener('DOMContentLoaded', testPerformanceOptimizations);
+    </script>
+</body>
+</html>

@@ -2,20 +2,41 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Linkedin, Twitter, Instagram } from "lucide-react";
+import { ExternalLink, Linkedin, Twitter, Instagram, Github } from "lucide-react";
+import { useSection } from "@/components/content/providers/ContentProvider";
 
 export function Footer() {
-  const socialLinks = [
-    { name: "LinkedIn", icon: Linkedin, href: "#" },
-    { name: "TikTok", icon: "/placeholder-tiktok.svg", href: "#" },
-    { name: "Twitter", icon: Twitter, href: "#" },
-    { name: "Instagram", icon: Instagram, href: "#" }
-  ];
+  const { data: footerContent, isLoaded } = useSection("footer");
+
+  // Social media icons mapping
+  const socialIcons = {
+    twitter: Twitter,
+    linkedin: Linkedin,
+    instagram: Instagram,
+    github: Github,
+  };
+
+  // Fallback data
+  const socialLinks = isLoaded && footerContent?.social_links
+    ? footerContent.social_links.map(link => ({
+        name: link.platform.charAt(0).toUpperCase() + link.platform.slice(1),
+        icon: socialIcons[link.platform as keyof typeof socialIcons] || ExternalLink,
+        href: link.url
+      }))
+    : [
+        { name: "LinkedIn", icon: Linkedin, href: "#" },
+        { name: "Twitter", icon: Twitter, href: "#" },
+        { name: "GitHub", icon: Github, href: "#" },
+      ];
 
   const footerLinks = {
-    services: ["Our Services", "About Us", "Portfolio", "Digital Partner"],
-    legal: ["Privacy Policy", "Terms of Service"]
+    services: (isLoaded && footerContent?.navigation_sections?.[0]?.links?.map(link => link.title)) || ["Web Development", "Mobile Apps", "UI/UX Design", "Digital Marketing"],
+    legal: (isLoaded && footerContent?.navigation_sections?.[1]?.links?.map(link => link.title)) || ["Privacy Policy", "Terms of Service", "Cookie Policy"],
   };
+
+  // Ensure services and legal are always arrays
+  const servicesLinks = Array.isArray(footerLinks.services) ? footerLinks.services : ["Web Development", "Mobile Apps", "UI/UX Design", "Digital Marketing"];
+  const legalLinks = Array.isArray(footerLinks.legal) ? footerLinks.legal : ["Privacy Policy", "Terms of Service", "Cookie Policy"];
 
   return (
     <footer className="bg-[#fcfcf4]">
@@ -24,13 +45,15 @@ export function Footer() {
           {/* Mobile layout - stacked */}
           <div className="lg:hidden">
             <div className="max-w-md mx-auto">
-              {/* Newsletter section */}
+              {/* Company description */}
               <div className="mb-[50px]">
                 <h3 className="mb-[12px] font-['Public_Sans:Regular',_sans-serif] text-[24px] font-normal text-[#1e1e1e]">
-                  Stay update with us
+                  About Us
                 </h3>
                 <p className="mb-[32px] font-['Public_Sans:Regular',_sans-serif] text-[14px] leading-[20px] text-[#646464]">
-                  Lorem ipsum dolor sit amet consectetur. Maecenas lorem massa eleifend commodo convallis.
+                  {isLoaded && footerContent?.description
+                    ? footerContent.description
+                    : "Creating exceptional digital experiences that help businesses thrive in the modern world."}
                 </p>
                 <div className="relative h-12">
                   <input
@@ -52,7 +75,7 @@ export function Footer() {
                 {/* Services links */}
                 <div>
                   <div className="flex flex-col gap-[18px] font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[#1e1e1e]">
-                    {footerLinks.services.map((link, index) => (
+                    {servicesLinks.map((link, index) => (
                       <a
                         key={index}
                         href="#"
@@ -67,7 +90,7 @@ export function Footer() {
                 {/* Legal links */}
                 <div>
                   <div className="flex flex-col gap-[18px] font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[#1e1e1e]">
-                    {footerLinks.legal.map((link, index) => (
+                    {legalLinks.map((link, index) => (
                       <a
                         key={index}
                         href="#"
@@ -148,13 +171,15 @@ export function Footer() {
           {/* Desktop layout - horizontal */}
           <div className="hidden lg:block">
             <div className="flex">
-              {/* Left side - Newsletter */}
+              {/* Left side - Company description */}
               <div className="w-[432px] pr-12">
                 <h3 className="mb-4 font-['Public_Sans:Regular',_sans-serif] text-[32px] font-normal text-[#1e1e1e]">
-                  Stay update with us
+                  About Us
                 </h3>
                 <p className="mb-6 font-['Public_Sans:Regular',_sans-serif] text-[14px] leading-[20px] text-[#646464]">
-                  Lorem ipsum dolor sit amet consectetur. Maecenas lorem massa eleifend commodo convallis. Pellentesque quis aliquet auctor
+                  {isLoaded && footerContent?.description
+                    ? footerContent.description
+                    : "Creating exceptional digital experiences that help businesses thrive in the modern world."}
                 </p>
                 <div className="relative h-12 w-[432px]">
                   <input
@@ -177,7 +202,7 @@ export function Footer() {
                 {/* Services links */}
                 <div>
                   <div className="flex flex-col gap-[18px] font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[#1e1e1e]">
-                    {footerLinks.services.map((link, index) => (
+                    {servicesLinks.map((link, index) => (
                       <a
                         key={index}
                         href="#"
@@ -192,7 +217,7 @@ export function Footer() {
                 {/* Legal links */}
                 <div>
                   <div className="flex flex-col gap-[18px] font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[#1e1e1e]">
-                    {footerLinks.legal.map((link, index) => (
+                    {legalLinks.map((link, index) => (
                       <a
                         key={index}
                         href="#"
@@ -269,7 +294,9 @@ export function Footer() {
               {/* Copyright */}
               <div>
                 <p className="font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[rgba(30,30,30,0.5)]">
-                  © 2025 Adana Digital. All Right Reserved
+                  {isLoaded && footerContent?.copyright_text
+                    ? footerContent.copyright_text
+                    : "© 2024 Your Company. All rights reserved."}
                 </p>
               </div>
             </div>

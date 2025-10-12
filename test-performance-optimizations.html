@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Optimization Tests</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Performance optimization styles */
+        .lazy-image {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .lazy-image.loaded {
+            opacity: 1;
+        }
+
+        .lazy-placeholder {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Performance metrics display */
+        .metric-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .metric-card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .metric-good { color: #10b981; }
+        .metric-warning { color: #f59e0b; }
+        .metric-bad { color: #ef4444; }
+
+        /* Virtual scrolling */
+        .virtual-container {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: #f9fafb;
+        }
+
+        .virtual-item {
+            height: 80px;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            background: white;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Performance test sections */
+        .test-section {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 0.5rem;
+            background: #e5e7eb;
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #3b82f6;
+            transition: width 0.3s ease;
+        }
+
+        /* Image optimization preview */
+        .optimized-image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.5rem;
+            background: #f3f4f6;
+        }
+
+        .optimized-image {
+            width: 100%;
+            height: auto;
+            transition: all 0.3s ease;
+        }
+
+        .image-quality-indicator {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+        }
+
+        /* Device capability indicators */
+        .capability-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .capability-good {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .capability-medium {
+            background: #fed7aa;
+            color: #92400e;
+        }
+
+        .capability-poor {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Responsive performance metrics */
+        @media (max-width: 640px) {
+            .metric-value {
+                font-size: 1.25rem;
+            }
+
+            .virtual-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                ⚡ Performance Optimization Tests
+            </h1>
+            <p class="text-gray-600">
+                Comprehensive testing of lazy loading, image optimization, and performance monitoring
+            </p>
+        </div>
+
+        <!-- Device Capabilities -->
+        <div class="test-section">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">📱 Device Capabilities</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                <div class="metric-card">
+                    <div class="metric-value" id="device-type">Detecting...</div>
+                    <div class="metric-label">Device Type</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="connection-type">Detecting...</div>
+                    <div class="metric-label">Connection</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="memory-info">Detecting...</div>
+                    <div class="metric-label">Device Memory</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="cpu-cores">Detecting...</div>
+                    <div class="metric-label">CPU Cores</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="pixel-ratio">Detecting...</div>
+                    <div class="metric-label">Pixel Ratio</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="performance-score">Calculating...</div>
+                    <div class="metric-label">Performance Score</div>
+                </div>
+            </div>
+
+            <div id="capability-badges" class="flex flex-wrap">
+                <!-- Capability badges will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Performance Metrics -->
+        <div class="test-section">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">📊 Real-time Performance Metrics</h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="metric-card">
+                    <div class="metric-value" id="fps">60</div>
+                    <div class="metric-label">FPS</div>
+                    <div class="progress-bar mt-2">
+                        <div id="fps-progress" class="progress-fill" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="memory-usage">0MB</div>
+                    <div class="metric-label">Memory Usage</div>
+                    <div class="progress-bar mt-2">
+                        <div id="memory-progress" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="load-time">0ms</div>
+                    <div class="metric-label">Load Time</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="render-time">0ms</div>
+                    <div class="metric-label">Render Time</div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <button onclick="startPerformanceMonitoring()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition mr-2">
+                    Start Monitoring
+                </button>
+                <button onclick="stopPerformanceMonitoring()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+                    Stop Monitoring
+                </button>
+            </div>
+
+            <div id="performance-chart" class="h-32 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500">
+                Performance chart will appear here...
+            </div>
+        </div>
+
+        <!-- Lazy Loading Tests -->
+        <div class="test-section">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">🖼️ Lazy Loading Tests</h2>
+
+            <div class="mb-6">
+                <p class="text-gray-600 mb-4">Scroll down to test lazy loading of images and components:</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Lazy loaded images -->
+                    <div class="lazy-image-container" data-lazy-image="1">
+                        <div class="lazy-placeholder h-48 rounded-lg"></div>
+                        <img class="lazy-image optimized-image rounded-lg"
+                             data-src="https://picsum.photos/400/300?random=1"
+                             alt="Test image 1"
+                             loading="lazy" />
+                        <div class="image-quality-indicator">Auto</div>
+                    </div>
+
+                    <div class="lazy-image-container" data-lazy-image="2">
+                        <div class="lazy-placeholder h-48 rounded-lg"></div>
+                        <img class="lazy-image optimized-image rounded-lg"
+                             data-src="https://picsum.photos/400/300?random=2"
+                             alt="Test image 2"
+                             loading="lazy" />
+                        <div class="image-quality-indicator">Auto</div>
+                    </div>
+
+                    <div class="lazy-image-container" data-lazy-image="3">
+                        <div class="lazy-placeholder h-48 rounded-lg"></div>
+                        <img class="lazy-image optimized-image rounded-lg"
+                             data-src="https://picsum.photos/400/300?random=3"
+                             alt="Test image 3"
+                             loading="lazy" />
+                        <div class="image-quality-indicator">Auto</div>
+                    </div>
+
+                    <div class="lazy-image-container" data-lazy-image="4">
+                        <div class="lazy-placeholder h-48 rounded-lg"></div>
+                        <img class="lazy-image optimized-image rounded-lg"
+                             data-src="https://picsum.photos/400/300?random=4"
+                             alt="Test image 4"
+                             loading="lazy" />
+                        <div class="image-quality-indicator">Auto</div>
+                    </div>
+
+                    <div class="lazy-image-container" data-lazy-image="5">
+                        <div class="lazy-placeholder h-48 rounded-lg"></div>
+                        <img class="lazy-image optimized-image rounded-lg"
+                             data-src="https://picsum.photos/400/300?random=5"
+                             alt="Test image 5"
+                             loading="lazy" />
+                        <div class="image-quality-indicator">Auto</div>
+                    </div>
+
+                    <div class="lazy-image-container" data-lazy-image="6">
+                        <div class="lazy-placeholder h-48 rounded-lg"></div>
+                        <img class="lazy-image optimized-image rounded-lg"
+                             data-src="https://picsum.photos/400/300?random=6"
+                             alt="Test image 6"
+                             loading="lazy" />
+                        <div class="image-quality-indicator">Auto</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="font-semibold mb-2">Lazy Loading Status:</h3>
+                <div id="lazy-loading-status" class="text-sm text-gray-600">
+                    <div>Images loaded: <span id="images-loaded">0</span> / <span id="total-images">6</span></div>
+                    <div>Intersection Observer: <span id="intersection-observer-status">Active</span></div>
+                    <div>Loading strategy: <span id="loading-strategy">Auto-detecting...</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Virtual Scrolling Test -->
+        <div class="test-section">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">📜 Virtual Scrolling Test</h2>
+
+            <p class="text-gray-600 mb-4">Efficiently rendering 1000+ items using virtual scrolling:</p>
+
+            <div class="virtual-container" id="virtual-container">
+                <!-- Virtual items will be rendered here -->
+            </div>
+
+            <div class="mt-4 flex justify-between items-center">
+                <div class="text-sm text-gray-600">
+                    Total items: <span id="virtual-total">1000</span> |
+                    Rendered: <span id="virtual-rendered">0</span> |
+                    Visible: <span id="virtual-visible">0</span>
+                </div>
+                <button onclick="resetVirtualScroll()" class="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600 transition">
+                    Reset Scroll
+                </button>
+            </div>
+        </div>
+
+        <!-- Image Optimization Tests -->
+        <div class="test-section">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">🎨 Image Optimization Tests</h2>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Original vs Optimized comparison -->
+                <div>
+                    <h3 class="font-semibold mb-3">Responsive Image Loading</h3>
+                    <div class="space-y-4">
+                        <div class="optimized-image-container">
+                            <img id="responsive-image"
+                                 src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect width='400' height='300' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%236b7280'%3ELoading...%3C/text%3E%3C/svg%3E"
+                                 alt="Responsive test"
+                                 class="optimized-image" />
+                            <div class="image-quality-indicator" id="responsive-quality">Loading...</div>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <div>Dimensions: <span id="image-dimensions">Loading...</span></div>
+                            <div>File size: <span id="image-size">Loading...</span></div>
+                            <div>Network type: <span id="network-type">Detecting...</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progressive loading -->
+                <div>
+                    <h3 class="font-semibold mb-3">Progressive Enhancement</h3>
+                    <div class="space-y-4">
+                        <div class="optimized-image-container">
+                            <div id="progressive-placeholder" class="lazy-placeholder h-64 rounded-lg"></div>
+                            <img id="progressive-image"
+                                 style="display: none;"
+                                 class="optimized-image" />
+                            <div class="image-quality-indicator">Progressive</div>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <div>Load state: <span id="progressive-state">Placeholder</span></div>
+                            <div>Blur effect: <span id="blur-status">Active</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Test Results -->
+        <div class="test-section">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">🏆 Performance Test Results</h2>
+
+            <div id="test-results" class="space-y-4">
+                <!-- Test results will be populated here -->
+            </div>
+
+            <div class="mt-6">
+                <button onclick="runAllPerformanceTests()" class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition">
+                    Run All Tests
+                </button>
+                <button onclick="exportTestResults()" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition ml-2">
+                    Export Results
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let performanceMonitor = null;
+        let virtualScrollData = {
+            items: [],
+            visibleStart: 0,
+            visibleEnd: 0,
+            itemHeight: 80,
+            containerHeight: 400,
+            scrollTop: 0
+        };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            detectDeviceCapabilities();
+            setupLazyLoading();
+            setupVirtualScroll();
+            setupResponsiveImage();
+            setupProgressiveLoading();
+            runAllPerformanceTests();
+        });
+
+        // Device capability detection
+        function detectDeviceCapabilities() {
+            // Device type
+            const deviceType = window.innerWidth < 768 ? 'Mobile' :
+                            window.innerWidth < 1024 ? 'Tablet' : 'Desktop';
+            document.getElementById('device-type').textContent = deviceType;
+
+            // Connection info
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            const connectionType = connection ? (connection.effectiveType || 'Unknown') : 'Unknown';
+            document.getElementById('connection-type').textContent = connectionType;
+
+            // Device memory
+            const memory = navigator.deviceMemory || 'Unknown';
+            document.getElementById('memory-info').textContent = typeof memory === 'number' ? `${memory}GB` : memory;
+
+            // CPU cores
+            const cores = navigator.hardwareConcurrency || 'Unknown';
+            document.getElementById('cpu-cores').textContent = cores;
+
+            // Pixel ratio
+            const pixelRatio = window.devicePixelRatio || 1;
+            document.getElementById('pixel-ratio').textContent = `${pixelRatio}x`;
+
+            // Performance score calculation
+            const score = calculatePerformanceScore(deviceType, connectionType, memory, cores, pixelRatio);
+            document.getElementById('performance-score').textContent = score + '%';
+            document.getElementById('performance-score').className = `metric-value ${getPerformanceClass(score)}`;
+
+            // Capability badges
+            updateCapabilityBadges(deviceType, connectionType, memory, cores, score);
+        }
+
+        function calculatePerformanceScore(deviceType, connection, memory, cores, pixelRatio) {
+            let score = 100;
+
+            // Device type penalty
+            if (deviceType === 'Mobile') score -= 10;
+            if (deviceType === 'Tablet') score -= 5;
+
+            // Connection penalty
+            if (connection === 'slow-2g') score -= 30;
+            if (connection === '2g') score -= 25;
+            if (connection === '3g') score -= 15;
+            if (connection === '4g') score -= 5;
+
+            // Memory penalty
+            if (typeof memory === 'number' && memory < 4) score -= 15;
+            if (typeof memory === 'number' && memory < 8) score -= 5;
+
+            // CPU penalty
+            if (typeof cores === 'number' && cores < 4) score -= 10;
+            if (typeof cores === 'number' && cores < 8) score -= 5;
+
+            // High DPI penalty
+            if (pixelRatio > 2) score -= 5;
+
+            return Math.max(0, Math.min(100, score));
+        }
+
+        function getPerformanceClass(score) {
+            if (score >= 80) return 'metric-good';
+            if (score >= 60) return 'metric-warning';
+            return 'metric-bad';
+        }
+
+        function updateCapabilityBadges(deviceType, connection, memory, cores, score) {
+            const badgesContainer = document.getElementById('capability-badges');
+            const badges = [];
+
+            // Device type badge
+            badges.push(`<span class="capability-badge ${deviceType === 'Desktop' ? 'capability-good' : deviceType === 'Tablet' ? 'capability-medium' : 'capability-poor'}">${deviceType}</span>`);
+
+            // Connection badge
+            const connectionClass = connection === '4g' ? 'capability-good' :
+                                  connection === '3g' ? 'capability-medium' : 'capability-poor';
+            badges.push(`<span class="capability-badge ${connectionClass}">${connection}</span>`);
+
+            // Memory badge
+            if (typeof memory === 'number') {
+                const memoryClass = memory >= 8 ? 'capability-good' : memory >= 4 ? 'capability-medium' : 'capability-poor';
+                badges.push(`<span class="capability-badge ${memoryClass}">${memory}GB RAM</span>`);
+            }
+
+            // Performance badge
+            const performanceClass = score >= 80 ? 'capability-good' : score >= 60 ? 'capability-medium' : 'capability-poor';
+            badges.push(`<span class="capability-badge ${performanceClass}">Score: ${score}%</span>`);
+
+            badgesContainer.innerHTML = badges.join('');
+        }
+
+        // Performance monitoring
+        function startPerformanceMonitoring() {
+            if (performanceMonitor) return;
+
+            let frameCount = 0;
+            let lastTime = performance.now();
+            let fpsHistory = [];
+
+            function measureFPS() {
+                const currentTime = performance.now();
+                const deltaTime = currentTime - lastTime;
+
+                if (deltaTime >= 1000) {
+                    const fps = Math.round((frameCount * 1000) / deltaTime);
+                    fpsHistory.push(fps);
+
+                    if (fpsHistory.length > 10) fpsHistory.shift();
+
+                    const avgFps = Math.round(fpsHistory.reduce((a, b) => a + b, 0) / fpsHistory.length);
+                    updateFPSMetrics(avgFps);
+
+                    frameCount = 0;
+                    lastTime = currentTime;
+                }
+
+                frameCount++;
+                performanceMonitor = requestAnimationFrame(measureFPS);
+            }
+
+            measureFPS();
+            updateMemoryUsage();
+        }
+
+        function stopPerformanceMonitoring() {
+            if (performanceMonitor) {
+                cancelAnimationFrame(performanceMonitor);
+                performanceMonitor = null;
+            }
+        }
+
+        function updateFPSMetrics(fps) {
+            const fpsElement = document.getElementById('fps');
+            const fpsProgress = document.getElementById('fps-progress');
+
+            fpsElement.textContent = fps;
+            fpsElement.className = `metric-value ${getPerformanceClass(fps / 60 * 100)}`;
+
+            const progressPercent = Math.min(100, (fps / 60) * 100);
+            fpsProgress.style.width = `${progressPercent}%`;
+
+            if (fps < 30) {
+                fpsProgress.style.backgroundColor = '#ef4444';
+            } else if (fps < 50) {
+                fpsProgress.style.backgroundColor = '#f59e0b';
+            } else {
+                fpsProgress.style.backgroundColor = '#10b981';
+            }
+        }
+
+        function updateMemoryUsage() {
+            if (performance.memory) {
+                const used = Math.round(performance.memory.usedJSHeapSize / 1048576);
+                const total = Math.round(performance.memory.totalJSHeapSize / 1048576);
+                const percentage = Math.round((used / total) * 100);
+
+                document.getElementById('memory-usage').textContent = `${used}MB`;
+                document.getElementById('memory-progress').style.width = `${percentage}%`;
+
+                const memoryElement = document.getElementById('memory-usage');
+                memoryElement.className = `metric-value ${percentage > 80 ? 'metric-bad' : percentage > 60 ? 'metric-warning' : 'metric-good'}`;
+            }
+        }
+
+        // Lazy loading implementation
+        function setupLazyLoading() {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        const container = img.closest('.lazy-image-container');
+
+                        // Load image
+                        img.src = img.dataset.src;
+
+                        img.onload = () => {
+                            img.classList.add('loaded');
+                            const placeholder = container.querySelector('.lazy-placeholder');
+                            if (placeholder) {
+                                placeholder.style.display = 'none';
+                            }
+                            updateLazyLoadingStatus();
+                        };
+
+                        observer.unobserve(img);
+                    }
+                });
+            }, {
+                rootMargin: '50px 0px',
+                threshold: 0.01
+            });
+
+            document.querySelectorAll('.lazy-image').forEach(img => {
+                imageObserver.observe(img);
+            });
+
+            updateLazyLoadingStatus();
+        }
+
+        function updateLazyLoadingStatus() {
+            const totalImages = document.querySelectorAll('.lazy-image').length;
+            const loadedImages = document.querySelectorAll('.lazy-image.loaded').length;
+
+            document.getElementById('images-loaded').textContent = loadedImages;
+            document.getElementById('total-images').textContent = totalImages;
+        }
+
+        // Virtual scrolling implementation
+        function setupVirtualScroll() {
+            const container = document.getElementById('virtual-container');
+
+            // Generate 1000 items
+            for (let i = 0; i < 1000; i++) {
+                virtualScrollData.items.push({
+                    id: i,
+                    title: `Item ${i + 1}`,
+                    description: `This is virtual item number ${i + 1} in the list.`,
+                    color: `hsl(${(i * 137) % 360}, 70%, 60%)`
+                });
+            }
+
+            container.addEventListener('scroll', handleVirtualScroll);
+            renderVirtualItems();
+        }
+
+        function handleVirtualScroll() {
+            const container = document.getElementById('virtual-container');
+            virtualScrollData.scrollTop = container.scrollTop;
+            renderVirtualItems();
+        }
+
+        function renderVirtualItems() {
+            const container = document.getElementById('virtual-container');
+            const { items, itemHeight, containerHeight, scrollTop } = virtualScrollData;
+
+            const visibleStart = Math.floor(scrollTop / itemHeight);
+            const visibleEnd = Math.min(
+                visibleStart + Math.ceil(containerHeight / itemHeight) + 2,
+                items.length
+            );
+
+            virtualScrollData.visibleStart = visibleStart;
+            virtualScrollData.visibleEnd = visibleEnd;
+
+            // Clear container
+            container.innerHTML = '';
+
+            // Add top spacer
+            const topSpacer = document.createElement('div');
+            topSpacer.style.height = `${visibleStart * itemHeight}px`;
+            container.appendChild(topSpacer);
+
+            // Render visible items
+            for (let i = visibleStart; i < visibleEnd; i++) {
+                const item = items[i];
+                const itemElement = document.createElement('div');
+                itemElement.className = 'virtual-item';
+                itemElement.innerHTML = `
+                    <div class="w-12 h-12 rounded-full mr-4" style="background-color: ${item.color}"></div>
+                    <div>
+                        <div class="font-semibold">${item.title}</div>
+                        <div class="text-sm text-gray-600">${item.description}</div>
+                    </div>
+                `;
+                container.appendChild(itemElement);
+            }
+
+            // Add bottom spacer
+            const bottomSpacer = document.createElement('div');
+            bottomSpacer.style.height = `${(items.length - visibleEnd) * itemHeight}px`;
+            container.appendChild(bottomSpacer);
+
+            // Update stats
+            document.getElementById('virtual-total').textContent = items.length;
+            document.getElementById('virtual-rendered').textContent = visibleEnd - visibleStart;
+            document.getElementById('virtual-visible').textContent = Math.ceil(containerHeight / itemHeight);
+        }
+
+        function resetVirtualScroll() {
+            const container = document.getElementById('virtual-container');
+            container.scrollTop = 0;
+            virtualScrollData.scrollTop = 0;
+            renderVirtualItems();
+        }
+
+        // Responsive image setup
+        function setupResponsiveImage() {
+            const img = document.getElementById('responsive-image');
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            const connectionType = connection ? connection.effectiveType : 'unknown';
+
+            // Choose image quality based on connection and device
+            let quality = 'high';
+            if (connectionType === 'slow-2g' || connectionType === '2g') {
+                quality = 'low';
+            } else if (connectionType === '3g') {
+                quality = 'medium';
+            }
+
+            // Load appropriate image
+            const imageUrl = `https://picsum.photos/600/400?random=10&quality=${quality}`;
+
+            const startLoadTime = performance.now();
+            img.onload = () => {
+                const loadTime = Math.round(performance.now() - startLoadTime);
+                document.getElementById('load-time').textContent = `${loadTime}ms`;
+
+                document.getElementById('image-dimensions').textContent = `${img.naturalWidth}x${img.naturalHeight}`;
+                document.getElementById('responsive-quality').textContent = quality.toUpperCase();
+            };
+
+            img.src = imageUrl;
+            document.getElementById('network-type').textContent = connectionType;
+        }
+
+        // Progressive loading setup
+        function setupProgressiveLoading() {
+            const img = document.getElementById('progressive-image');
+            const placeholder = document.getElementById('progressive-placeholder');
+
+            // Start with low quality image
+            img.src = 'https://picsum.photos/100/75?random=11&blur=10';
+            img.style.filter = 'blur(10px)';
+            img.style.display = 'block';
+            placeholder.style.display = 'none';
+
+            document.getElementById('progressive-state').textContent = 'Low Quality';
+            document.getElementById('blur-status').textContent = 'Active (10px)';
+
+            // Load high quality after delay
+            setTimeout(() => {
+                const startRenderTime = performance.now();
+                img.onload = () => {
+                    const renderTime = Math.round(performance.now() - startRenderTime);
+                    document.getElementById('render-time').textContent = `${renderTime}ms`;
+
+                    // Smoothly remove blur
+                    img.style.transition = 'filter 0.5s ease-in-out';
+                    img.style.filter = 'blur(0px)';
+
+                    document.getElementById('progressive-state').textContent = 'High Quality';
+                    document.getElementById('blur-status').textContent = 'None';
+                };
+
+                img.src = 'https://picsum.photos/600/400?random=11';
+            }, 1500);
+        }
+
+        // Performance testing
+        function runAllPerformanceTests() {
+            const results = [];
+
+            // Test 1: Lazy Loading Performance
+            const lazyLoadTest = testLazyLoadingPerformance();
+            results.push(lazyLoadTest);
+
+            // Test 2: Virtual Scrolling Performance
+            const virtualScrollTest = testVirtualScrollPerformance();
+            results.push(virtualScrollTest);
+
+            // Test 3: Image Optimization
+            const imageOptimizationTest = testImageOptimization();
+            results.push(imageOptimizationTest);
+
+            // Test 4: Memory Usage
+            const memoryTest = testMemoryUsage();
+            results.push(memoryTest);
+
+            // Test 5: Rendering Performance
+            const renderingTest = testRenderingPerformance();
+            results.push(renderingTest);
+
+            displayTestResults(results);
+        }
+
+        function testLazyLoadingPerformance() {
+            const start = performance.now();
+            const lazyImages = document.querySelectorAll('.lazy-image');
+            let loadedCount = 0;
+
+            return new Promise((resolve) => {
+                lazyImages.forEach(img => {
+                    if (img.complete) {
+                        loadedCount++;
+                    } else {
+                        img.onload = () => loadedCount++;
+                    }
+                });
+
+                setTimeout(() => {
+                    const duration = performance.now() - start;
+                    resolve({
+                        name: 'Lazy Loading',
+                        duration: Math.round(duration),
+                        passed: loadedCount === lazyImages.length,
+                        details: `${loadedCount}/${lazyImages.length} images ready`
+                    });
+                }, 2000);
+            });
+        }
+
+        function testVirtualScrollPerformance() {
+            const start = performance.now();
+            const container = document.getElementById('virtual-container');
+
+            // Simulate rapid scrolling
+            let scrollCount = 0;
+            const scrollInterval = setInterval(() => {
+                container.scrollTop += 100;
+                scrollCount++;
+
+                if (scrollCount >= 20) {
+                    clearInterval(scrollInterval);
+                    const duration = performance.now() - start;
+
+                    return {
+                        name: 'Virtual Scrolling',
+                        duration: Math.round(duration),
+                        passed: duration < 1000,
+                        details: `20 scroll events in ${Math.round(duration)}ms`
+                    };
+                }
+            }, 50);
+        }
+
+        function testImageOptimization() {
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            const connectionType = connection ? connection.effectiveType : 'unknown';
+
+            // Test if appropriate image quality is being used
+            const goodOptimization = !['slow-2g', '2g'].includes(connectionType) ||
+                                   document.getElementById('responsive-quality').textContent === 'LOW';
+
+            return {
+                name: 'Image Optimization',
+                duration: 0,
+                passed: goodOptimization,
+                details: `Connection: ${connectionType}, Quality: ${document.getElementById('responsive-quality').textContent}`
+            };
+        }
+
+        function testMemoryUsage() {
+            if (!performance.memory) {
+                return {
+                    name: 'Memory Usage',
+                    duration: 0,
+                    passed: true,
+                    details: 'Memory API not available'
+                };
+            }
+
+            const used = performance.memory.usedJSHeapSize / 1048576;
+            const total = performance.memory.totalJSHeapSize / 1048576;
+            const percentage = (used / total) * 100;
+
+            return {
+                name: 'Memory Usage',
+                duration: 0,
+                passed: percentage < 80,
+                details: `${Math.round(used)}MB used (${Math.round(percentage)}%)`
+            };
+        }
+
+        function testRenderingPerformance() {
+            const start = performance.now();
+
+            // Create test elements
+            const testContainer = document.createElement('div');
+            testContainer.style.position = 'absolute';
+            testContainer.style.top = '-9999px';
+            testContainer.style.left = '-9999px';
+
+            for (let i = 0; i < 100; i++) {
+                const element = document.createElement('div');
+                element.textContent = `Test element ${i}`;
+                element.style.padding = '10px';
+                element.style.margin = '5px';
+                element.style.border = '1px solid #ccc';
+                testContainer.appendChild(element);
+            }
+
+            document.body.appendChild(testContainer);
+
+            // Measure render time
+            const renderTime = performance.now() - start;
+
+            // Cleanup
+            document.body.removeChild(testContainer);
+
+            return {
+                name: 'Rendering Performance',
+                duration: Math.round(renderTime),
+                passed: renderTime < 50,
+                details: `100 elements rendered in ${Math.round(renderTime)}ms`
+            };
+        }
+
+        async function displayTestResults(tests) {
+            const resultsContainer = document.getElementById('test-results');
+            let html = '';
+
+            const results = await Promise.all(tests);
+            const passedCount = results.filter(test => test.passed).length;
+            const overallScore = Math.round((passedCount / results.length) * 100);
+
+            results.forEach(test => {
+                const statusClass = test.passed ? 'text-green-600' : 'text-red-600';
+                const statusIcon = test.passed ? '✅' : '❌';
+
+                html += `
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div>
+                            <div class="font-semibold">${test.name}</div>
+                            <div class="text-sm text-gray-600">${test.details}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="${statusClass}">${statusIcon}</div>
+                            <div class="text-sm text-gray-500">${test.duration}ms</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div class="mt-6 p-4 bg-blue-50 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-blue-600">${overallScore}%</div>
+                    <div class="text-sm text-gray-600">Overall Performance Score</div>
+                    <div class="text-xs text-gray-500 mt-2">${passedCount} of ${results.length} tests passed</div>
+                </div>
+            `;
+
+            resultsContainer.innerHTML = html;
+        }
+
+        function exportTestResults() {
+            const results = document.getElementById('test-results').innerText;
+            const blob = new Blob([results], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'performance-test-results.txt';
+            a.click();
+
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

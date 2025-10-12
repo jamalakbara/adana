@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Parkinsans } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ContentProvider } from "@/components/content/providers/ContentProvider";
+import { fallbackContent } from "@/lib/cms/fallback-content";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -40,7 +42,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <ContentProvider
+            fallbackContent={fallbackContent}
+            enableCache={false} // Temporarily disable cache to refresh content
+          >
+            {children}
+          </ContentProvider>
         </ThemeProvider>
       </body>
     </html>

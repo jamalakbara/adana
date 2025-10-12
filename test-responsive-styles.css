@@ -1,0 +1,355 @@
+/* Mobile Responsiveness Test Styles */
+/* This file tests the responsive features implemented in the admin interface */
+
+/* Test: Mobile-first approach */
+.test-container {
+    /* Mobile default */
+    padding: 1rem;
+    margin: 0.5rem;
+    font-size: 14px;
+
+    /* Tablet breakpoint */
+    @media (min-width: 640px) {
+        padding: 1.5rem;
+        margin: 1rem;
+        font-size: 15px;
+        background: rgba(59, 130, 246, 0.1); /* Blue tint for tablet */
+    }
+
+    /* Desktop breakpoint */
+    @media (min-width: 1024px) {
+        padding: 2rem;
+        margin: 1.5rem;
+        font-size: 16px;
+        background: rgba(16, 185, 129, 0.1); /* Green tint for desktop */
+    }
+}
+
+/* Test: Touch-friendly targets */
+.touch-button {
+    /* Minimum touch target size for mobile */
+    min-height: 44px;
+    min-width: 44px;
+    padding: 12px 24px;
+    margin: 8px;
+
+    /* Larger on desktop */
+    @media (min-width: 1024px) {
+        min-height: 48px;
+        min-width: auto;
+        padding: 16px 32px;
+    }
+}
+
+/* Test: Responsive grid */
+.responsive-grid {
+    /* Mobile: Single column */
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+
+    /* Tablet: Two columns */
+    @media (min-width: 640px) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    /* Desktop: Three columns */
+    @media (min-width: 1024px) {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+}
+
+/* Test: Responsive typography */
+.responsive-text {
+    /* Mobile */
+    font-size: 14px;
+    line-height: 1.5;
+
+    /* Tablet */
+    @media (min-width: 640px) {
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    /* Desktop */
+    @media (min-width: 1024px) {
+        font-size: 16px;
+        line-height: 1.7;
+    }
+}
+
+/* Test: Navigation visibility */
+.nav-desktop-only {
+    /* Hidden on mobile */
+    display: none;
+
+    /* Visible on tablet and desktop */
+    @media (min-width: 768px) {
+        display: block;
+    }
+}
+
+.nav-mobile-only {
+    /* Visible on mobile */
+    display: block;
+
+    /* Hidden on tablet and desktop */
+    @media (min-width: 768px) {
+        display: none;
+    }
+}
+
+/* Test: Flexible layouts */
+.flex-responsive {
+    /* Mobile: Stacked */
+    flex-direction: column;
+
+    /* Desktop: Side by side */
+    @media (min-width: 768px) {
+        flex-direction: row;
+    }
+}
+
+/* Test: Container widths */
+.container-responsive {
+    width: 100%;
+    padding: 0 1rem;
+
+    /* Tablet */
+    @media (min-width: 640px) {
+        padding: 0 2rem;
+        max-width: 640px;
+        margin: 0 auto;
+    }
+
+    /* Desktop */
+    @media (min-width: 1024px) {
+        padding: 0 4rem;
+        max-width: 1024px;
+        margin: 0 auto;
+    }
+
+    /* Large Desktop */
+    @media (min-width: 1280px) {
+        max-width: 1280px;
+    }
+}
+
+/* Test: Sidebar behavior */
+.sidebar {
+    /* Mobile: Hidden or overlay */
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 280px;
+    height: 100vh;
+    background: white;
+    transition: left 0.3s ease;
+    z-index: 50;
+
+    /* Tablet and Desktop: Fixed sidebar */
+    @media (min-width: 768px) {
+        position: relative;
+        left: 0;
+        width: 256px;
+        height: auto;
+    }
+}
+
+.sidebar.open {
+    /* Mobile: Slide in */
+    left: 0;
+}
+
+/* Test: Header adjustments */
+.header {
+    /* Mobile: Compact with hamburger */
+    height: 60px;
+    padding: 0 1rem;
+
+    /* Desktop: Full height with navigation */
+    @media (min-width: 768px) {
+        height: 80px;
+        padding: 0 2rem;
+    }
+}
+
+/* Test: Form field sizing */
+.form-field {
+    /* Mobile: Full width with larger touch targets */
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px; /* Prevent zoom on iOS */
+    margin-bottom: 1rem;
+
+    /* Desktop: Standard size */
+    @media (min-width: 768px) {
+        padding: 10px 14px;
+        font-size: 14px;
+        margin-bottom: 0.75rem;
+    }
+}
+
+/* Test: Card layouts */
+.card-grid {
+    /* Mobile: Single column */
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+
+    /* Small tablets */
+    @media (min-width: 480px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Large tablets */
+    @media (min-width: 768px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Desktop */
+    @media (min-width: 1024px) {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Test: Image responsiveness */
+.responsive-image {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+
+    /* Constrain on large screens */
+    @media (min-width: 1024px) {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+}
+
+/* Test: Spacing adjustments */
+.spacing-responsive {
+    /* Mobile */
+    margin: 1rem 0;
+    padding: 1rem;
+
+    /* Tablet */
+    @media (min-width: 640px) {
+        margin: 1.5rem 0;
+        padding: 1.5rem;
+    }
+
+    /* Desktop */
+    @media (min-width: 1024px) {
+        margin: 2rem 0;
+        padding: 2rem;
+    }
+}
+
+/* Test: Table responsiveness */
+.responsive-table {
+    /* Mobile: Stack cards */
+    display: block;
+
+    /* Hide headers on mobile */
+    @media (max-width: 639px) {
+        thead {
+            display: none;
+        }
+
+        tbody, tr, td {
+            display: block;
+            width: 100%;
+        }
+
+        tr {
+            margin-bottom: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        td {
+            text-align: left;
+            padding: 0.25rem 0;
+            border: none;
+        }
+
+        td:before {
+            content: attr(data-label) ": ";
+            font-weight: bold;
+            display: inline-block;
+            width: 100px;
+        }
+    }
+
+    /* Desktop: Normal table */
+    @media (min-width: 640px) {
+        display: table;
+        width: 100%;
+
+        thead {
+            display: table-header-group;
+        }
+
+        tbody, tr, td {
+            display: table-cell;
+        }
+
+        tr {
+            display: table-row;
+        }
+    }
+}
+
+/* Visual indicators for testing */
+.indicator {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 1000;
+}
+
+/* Current breakpoint indicator */
+@media (max-width: 639px) {
+    .indicator::after {
+        content: "Mobile (≤639px)";
+        background: #10b981;
+    }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+    .indicator::after {
+        content: "Tablet (640px-1023px)";
+        background: #3b82f6;
+    }
+}
+
+@media (min-width: 1024px) {
+    .indicator::after {
+        content: "Desktop (≥1024px)";
+        background: #8b5cf6;
+    }
+}
+
+/* Print styles - ensure mobile-friendly printing */
+@media print {
+    .sidebar {
+        display: none !important;
+    }
+
+    .header {
+        height: auto !important;
+        padding: 1rem !important;
+    }
+
+    .responsive-grid {
+        grid-template-columns: 1fr !important;
+    }
+}

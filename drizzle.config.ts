@@ -1,11 +1,13 @@
 import 'dotenv/config';
 import { defineConfig } from 'drizzle-kit';
+import { supabaseConfig } from './lib/db/config';
 
 export default defineConfig({
     out: './drizzle',
-    schema: './db/schema/*',
+    schema: './lib/db/schema/*',
     dialect: 'postgresql',
     dbCredentials: {
-        url: process.env.DATABASE_URL!,
+        url: supabaseConfig.url,
+        ssl: { rejectUnauthorized: false },
     },
 });

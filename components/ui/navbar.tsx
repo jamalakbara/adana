@@ -1,18 +1,13 @@
 "use client";
 
 import React from "react";
-import { ExternalLink, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AnimatedButton } from "@/components/ui/animated-button";
 import { AdanaLogo } from "@/components/ui/adana-logo";
 import { DiscussButton } from "@/components/ui/discuss-button";
 import { cn } from "@/lib/utils";
-
-const navigationItems = [
-  { name: "Our Services", href: "#" },
-  { name: "About Us", href: "#" },
-  { name: "Portfolio", href: "#" },
-  { name: "Digital Partner", href: "#" },
-];
+import { useSection } from "@/components/content/providers/ContentProvider";
 
 interface NavbarProps {
   className?: string;
@@ -21,6 +16,7 @@ interface NavbarProps {
 export function Navbar({ className }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
+  const { data: navbarContent, isLoaded } = useSection("navbar");
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -57,28 +53,72 @@ export function Navbar({ className }: NavbarProps) {
                 )}
               </Button>
               <div className="flex-shrink-0">
-                <div className="h-[32px] sm:h-[36px] md:h-[39px] w-[90px] sm:w-[100px] md:w-[111px] relative">
-                  <AdanaLogo className="absolute inset-0" />
-                </div>
+                {isLoaded && navbarContent?.logo?.url ? (
+                  <div className="h-[32px] sm:h-[36px] md:h-[39px] w-[90px] sm:w-[100px] md:w-[111px] relative group cursor-pointer">
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none transition-transform duration-300 group-hover:scale-110 group-active:scale-95">
+                      <img
+                        src={navbarContent.logo.url}
+                        alt={navbarContent.logo.alt_text || "Logo"}
+                        className="absolute h-[97.44%] left-[1.13%] max-w-none top-[2.56%] w-[97.74%] transition-filter duration-300 group-hover:brightness-110 group-active:brightness-95 object-contain"
+                      />
+                    </div>
+                    {/* Subtle glow effect on hover */}
+                    <div className="absolute inset-0 rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-gradient-to-r from-[#f1ff66]/20 to-transparent pointer-events-none"></div>
+                  </div>
+                ) : (
+                  <div className="h-[32px] sm:h-[36px] md:h-[39px] w-[90px] sm:w-[100px] md:w-[111px] relative">
+                    <AdanaLogo className="absolute inset-0" />
+                  </div>
+                )}
               </div>
             </div>
-            <DiscussButton />
+            {isLoaded && navbarContent?.cta_button?.text && navbarContent?.cta_button?.href ? (
+              <AnimatedButton
+                variant="primary"
+                hasArrow={true}
+                arrowDirection="up-right"
+                animationType="scale"
+                size="md"
+                onClick={() => window.open(navbarContent.cta_button.href, navbarContent.cta_button.is_external ? '_blank' : '_self')}
+                className="px-4 py-2 text-[14px]"
+              >
+                {navbarContent.cta_button.text}
+              </AnimatedButton>
+            ) : (
+              <DiscussButton />
+            )}
           </div>
 
           {/* Desktop Logo */}
           <div className="hidden md:block flex-shrink-0">
-            <div className="h-[32px] sm:h-[36px] md:h-[39px] w-[90px] sm:w-[100px] md:w-[111px] relative">
-              <AdanaLogo className="absolute inset-0" />
-            </div>
+            {isLoaded && navbarContent?.logo?.url ? (
+              <div className="h-[32px] sm:h-[36px] md:h-[39px] w-[90px] sm:w-[100px] md:w-[111px] relative group cursor-pointer">
+                <div className="absolute inset-0 overflow-hidden pointer-events-none transition-transform duration-300 group-hover:scale-110 group-active:scale-95">
+                  <img
+                    src={navbarContent.logo.url}
+                    alt={navbarContent.logo.alt_text || "Logo"}
+                    className="absolute h-[97.44%] left-[1.13%] max-w-none top-[2.56%] w-[97.74%] transition-filter duration-300 group-hover:brightness-110 group-active:brightness-95 object-contain"
+                  />
+                </div>
+                {/* Subtle glow effect on hover */}
+                <div className="absolute inset-0 rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-gradient-to-r from-[#f1ff66]/20 to-transparent pointer-events-none"></div>
+              </div>
+            ) : (
+              <div className="h-[32px] sm:h-[36px] md:h-[39px] w-[90px] sm:w-[100px] md:w-[111px] relative">
+                <AdanaLogo className="absolute inset-0" />
+              </div>
+            )}
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="flex items-center gap-4 sm:gap-6 md:gap-8">
-              {navigationItems.map((item) => (
+              {isLoaded && navbarContent?.navigation_items?.map((item, index) => (
                 <a
-                  key={item.name}
+                  key={index}
                   href={item.href}
+                  target={item.is_external ? "_blank" : "_self"}
+                  rel={item.is_external ? "noopener noreferrer" : undefined}
                   className="relative text-[#1E1E1E] text-[14px] font-normal transition-all duration-300 hover:text-[#334e4d] hover:font-medium after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#334e4d] after:transition-all after:duration-300 hover:after:w-full"
                   style={{
                     color: "#1E1E1E",
@@ -89,7 +129,7 @@ export function Navbar({ className }: NavbarProps) {
                     lineHeight: "normal"
                   }}
                 >
-                  {item.name}
+                  {item.text}
                 </a>
               ))}
             </div>
@@ -97,7 +137,21 @@ export function Navbar({ className }: NavbarProps) {
 
           {/* Desktop CTA Button */}
           <div className="hidden md:block">
-            <DiscussButton />
+            {isLoaded && navbarContent?.cta_button?.text && navbarContent?.cta_button?.href ? (
+              <AnimatedButton
+                variant="primary"
+                hasArrow={true}
+                arrowDirection="up-right"
+                animationType="scale"
+                size="md"
+                onClick={() => window.open(navbarContent.cta_button.href, navbarContent.cta_button.is_external ? '_blank' : '_self')}
+                className="px-6 py-2 text-[14px]"
+              >
+                {navbarContent.cta_button.text}
+              </AnimatedButton>
+            ) : (
+              <DiscussButton />
+            )}
           </div>
         </div>
 
@@ -105,10 +159,12 @@ export function Navbar({ className }: NavbarProps) {
         {isMenuOpen && (
           <div className="md:hidden absolute top-full left-0 right-0 bg-[#fcfcf4] border-t border-[#e5e5e5] shadow-lg">
             <div className="py-6">
-              {navigationItems.map((item) => (
-                <div key={item.name} className="border-b border-[#e5e5e5] last:border-b-0">
+              {isLoaded && navbarContent?.navigation_items?.map((item, index) => (
+                <div key={index} className="border-b border-[#e5e5e5] last:border-b-0">
                   <a
                     href={item.href}
+                    target={item.is_external ? "_blank" : "_self"}
+                    rel={item.is_external ? "noopener noreferrer" : undefined}
                     className="block w-full text-left text-[#1E1E1E] text-[14px] font-normal transition-all duration-300 hover:text-[#334e4d] hover:font-medium py-3 px-4 hover:bg-[#f1ff66]/10"
                     style={{
                       color: "#1E1E1E",
@@ -120,7 +176,7 @@ export function Navbar({ className }: NavbarProps) {
                     }}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    {item.name}
+                    {item.text}
                   </a>
                 </div>
               ))}
