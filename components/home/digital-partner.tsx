@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SectionContainer } from "@/components/ui/section-container";
 import { Typography } from "@/components/ui/typography";
+import { useSection } from "@/components/content/providers/ContentProvider";
 
 const imgImage265 = "https://s3-alpha-sig.figma.com/img/1b36/d851/62005bd1ffa39c21001b3d7c9f6200f4?Expires=1760313600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=rQzdy--4cZxepGPh8k5Ijj3vgTIa~Xw~QshZ~-U5sVP3j2EBaGwxHPzwRQXMGuqxBQNQDaFZ1iSUGtcB734nb3How0aSClKqloOG~-lEx1dlQ-CDc2TEYOhjBcMbvwmCmcuzSH5mx4FVlDDnVQH9A~g64m6Hml29h1agBoEq1eth39MkUTm3R5IaGkYbXdJZXYZ-zQFDNVNkxHK671y-bswXD0vpqXRLtn4nyCYvTUdjmCTGLmxCPwDN9OPJ9t0l5xMX~nEifZ0I73RP4oVi5Qspk62l87AOv8FD8WgxDk4Djs3~3yUBIdhbQjkzfudhb4s8bUgBIHX7nlSDyxyv2g__";
 const imgPowerBiLogo1 = "https://s3-alpha-sig.figma.com/img/49ff/4fa2/c9e9f64e7769b8dc6246fb305011c527?Expires=1760313600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=oF3ub1wvv3rSjzK4R5OSX33OmgoWz~rDWGwNIFITTk6ogEkMP9Ol~UIw6hRCQCxUBRA4vCjjKVkpRtgiuTzX9AAVapTnO4thl~dLWdasfrMh8riX~gvsgJfFlAFPVObmIN9XGIEjYOBKqwckXrFVzKHHHgKvkNJ6jfS~XZuA2cnp4MYim-ljHjkB-4PWW-YEjAjd9wMr8THH1G-0kpzxuKFeBwW7xPggotYCcSWpDQwuAy9u-rXbxMhDHEo9I4lLSYkWM3fM1JAfbmfSJXp-zcvwvCd8MihwuOXJXyGurKj7kvxsE2hcg0TsHhHE30dq2Hmeq8ebzmoo3Yx6y1YAWA__";
 const imgImage266 = "https://s3-alpha-sig.figma.com/img/8755/6ca6/26c3cc01b8adc9ca461e6b4a2d0f9376?Expires=1760313600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=s5tXOwPxDq4lK-DQc2lx7To-xXFMwBDfWPnOhrKOOHCQlewQ~GBbCo98u6A24i3I6guzXD6vF85Y-A9~zCSxMu9mWpbrSy2Pi3bB35Ez7VJJeceTInGp~eIzgFJRii83acPd40kpmHFnAMHjMHkh-4oM-Z4ugZwULNIB5wUfxiSOPA8E9uuVR4ZuWYQOYRTpS-a1CT1GFnPCt6kgviGR6smbDQVGMCpdG1Kgdhp~xUhfgDari2hmByyFZRbA7u5j9W9ePvfKt2LNMnuSc0fyOaXeX4nwNoB9S~53hbnEJSSVtbiwRYTWCHD7uMi1w908Ik3Fk-z43lvJDG5GK5JOxg__";
 const imgImage267 = "https://s3-alpha-sig.figma.com/img/e723/6037/22b821f302aeeadffd325c67f30a6968?Expires=1760313600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=gyoraJmcUy8EwG0pHHmkfsZZ8lnxZPcNmSsmoGiX-08o8Q5q5Pyb0GE9l9HcIPujEqJVJRCu8w4lYIJCtOdXaucqJlZFGz7HqW1G0uIVj66ZROXbUgdAATYEgSyEnosdpQHryZEjJtDvyrEMf5B~~gF2NrASsZ~puMVke7JnBKf0C2yFN6W70zVVUolpWWnURYJK9I7tDjUH7taQGDafdWroywgWrI3B4mjJuFCxM3fc2PPjG12OvGo9zY2IInTkrnvtYCKbqllfMRpDiE4IGvIksNvzGTL0GoyRMn8y9iv-r8AkFwExys7xJ65hYAygjP8kOcoUA-IuESOuck9SCg__";
 
-// Define partner data with their corresponding images
-const partnerData = {
+// Default fallback partner data
+const defaultPartnerData = {
   "Agency Partner": [
     { src: imgImage265, alt: "Agency Partner 1" },
     { src: imgImage266, alt: "Agency Partner 2" },
@@ -42,6 +43,26 @@ const partnerData = {
     { src: imgPowerBiLogo1, alt: "Social Partner 3" },
     { src: imgImage267, alt: "Social Partner 4" }
   ]
+};
+
+// Helper function to convert CMS partner data to component format
+const convertCMSPartnerData = (partnerTags: any[] = []) => {
+  const result: Record<string, Array<{ src: string; alt: string }>> = {};
+
+  partnerTags.forEach(tag => {
+    const partners = (tag.partners || [])
+      .filter((partner: any) => partner.logo && (partner.logo.url || partner.logo.supabase_url))
+      .map((partner: any, index: number) => ({
+        src: partner.logo.url || partner.logo.supabase_url || '',
+        alt: `${tag.label} Partner ${index + 1}`
+      }));
+
+    if (partners.length > 0) {
+      result[tag.label] = partners;
+    }
+  });
+
+  return result;
 };
 
 interface PartnerTagProps {
@@ -88,7 +109,34 @@ function PartnerCard({ imageSrc, alt, index = 0 }: PartnerCardProps & { index?: 
 }
 
 export function DigitalPartner() {
-  const [activePartner, setActivePartner] = useState<string>("Social Partner");
+  const { data: digitalPartnersContent, isLoaded } = useSection('digital-partners');
+
+  // Get CMS data or fall back to defaults
+  const title = isLoaded && digitalPartnersContent?.title
+    ? digitalPartnersContent.title
+    : "Digital Partner";
+
+  const subtitle = isLoaded && digitalPartnersContent?.subtitle
+    ? digitalPartnersContent.subtitle
+    : "Your Trusted Digital Partner for Your Digital Transformation";
+
+  // Convert CMS data to component format or use defaults
+  const partnerData = isLoaded && digitalPartnersContent?.partner_tags
+    ? convertCMSPartnerData(digitalPartnersContent.partner_tags)
+    : defaultPartnerData;
+
+  const [activePartner, setActivePartner] = useState<string>(() => {
+    const firstTag = Object.keys(partnerData)[0];
+    return firstTag || "Agency Partner";
+  });
+
+  // Update active partner if CMS data changes and current partner is no longer available
+  useEffect(() => {
+    const availableTags = Object.keys(partnerData);
+    if (!availableTags.includes(activePartner) && availableTags.length > 0) {
+      setActivePartner(availableTags[0]);
+    }
+  }, [partnerData, activePartner]);
 
   const currentPartners = partnerData[activePartner as keyof typeof partnerData] || [];
   const isSmallList = currentPartners.length <= 3;
@@ -105,7 +153,7 @@ export function DigitalPartner() {
               animationDelay: '0.2s'
             }}
           >
-            Digital Partner
+            {title}
           </Typography>
         </div>
 
@@ -119,9 +167,7 @@ export function DigitalPartner() {
               animationDelay: '0.4s'
             }}
           >
-            Your Trusted Digital Partner for
-            <br />
-            Your Digital Transformation
+            {subtitle}
           </Typography>
         </div>
 

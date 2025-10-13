@@ -5,9 +5,42 @@ import { useRouter } from "next/navigation";
 import { AdminButton, AdminCard, AdminAlert, AdminSpinner } from "@/components/admin/ui";
 import { DynamicField } from "./DynamicField";
 import { EditorPreview } from "./EditorPreview";
-import { contentManager } from "@/lib/cms/content";
+// Removed server-side import - using API calls instead
 import type { SectionType } from "@/lib/cms/validation";
 import type { Json } from "@/types/database";
+
+// API helper functions
+const fetchSection = async (sectionType: SectionType) => {
+  const response = await fetch(`/api/admin/sections/${sectionType}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch section');
+  }
+  return response.json();
+};
+
+const updateSection = async (sectionType: SectionType, data: any) => {
+  const response = await fetch(`/api/admin/sections/${sectionType}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to update section');
+  }
+  return response.json();
+};
+
+const publishSection = async (sectionType: SectionType) => {
+  const response = await fetch(`/api/admin/sections/${sectionType}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: 'published' }),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to publish section');
+  }
+  return response.json();
+};
 
 interface SectionEditorProps {
   sectionType: SectionType;
@@ -57,6 +90,20 @@ export function SectionEditor({
   fields,
 }: SectionEditorProps) {
   const router = useRouter();
+
+  // Safety check for fields
+  if (!fields || !Array.isArray(fields)) {
+    console.error('SectionEditor: fields prop is required and must be an array', { sectionType, fields });
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold text-red-600 mb-4">Configuration Error</h1>
+        <p className="text-gray-600">
+          Section "{sectionType}" is not properly configured. Please check the section configuration.
+        </p>
+      </div>
+    );
+  }
+
   const [state, setState] = useState<EditorState>({
     content: {},
     originalContent: {},
@@ -71,6 +118,11 @@ export function SectionEditor({
 
   const generateDefaultContent = useCallback((fieldConfigs: EditorFieldConfig[]): Record<string, unknown> => {
     const content: Record<string, unknown> = {};
+
+    if (!fieldConfigs || !Array.isArray(fieldConfigs)) {
+      console.warn('fieldConfigs is not an array:', fieldConfigs);
+      return content;
+    }
 
     fieldConfigs.forEach(field => {
       switch (field.type) {
@@ -108,33 +160,16 @@ export function SectionEditor({
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
 
-      // Try to acquire lock first
-      const lockResult = await contentManager.acquireLock(sectionType, "development-admin");
-
-      if (!lockResult.success && lockResult.lockInfo) {
+      // Load content via API
+      try {
+        const sectionData = await fetchSection(sectionType);
         setState(prev => ({
           ...prev,
-          lockStatus: {
-            isLocked: true,
-            lockedBy: lockResult.lockInfo?.locked_by,
-            lockedAt: lockResult.lockInfo?.locked_at,
-          },
+          content: (sectionData.content as Record<string, unknown>) || {},
+          originalContent: (sectionData.content as Record<string, unknown>) || {},
           loading: false,
         }));
-        return;
-      }
-
-      // Load content
-      const contentResult = await contentManager.getContentSection(sectionType);
-
-      if (contentResult.success && contentResult.data) {
-        setState(prev => ({
-          ...prev,
-          content: (contentResult.data?.content as Record<string, unknown>) || {},
-          originalContent: (contentResult.data?.content as Record<string, unknown>) || {},
-          loading: false,
-        }));
-      } else {
+      } catch (error) {
         // Create new content if none exists
         const defaultContent = generateDefaultContent(fields);
         setState(prev => ({
@@ -208,9 +243,12 @@ export function SectionEditor({
     try {
       setState(prev => ({ ...prev, saving: true, error: null }));
 
-      const result = await contentManager.updateContentSection(sectionType, state.content as Json);
+      const result = await updateSection(sectionType, {
+        content: state.content as Json,
+        status: 'draft'
+      });
 
-      if (result.success) {
+      if (result) {
         setState(prev => ({
           ...prev,
           saving: false,
@@ -241,16 +279,19 @@ export function SectionEditor({
       setState(prev => ({ ...prev, publishing: true, error: null }));
 
       // First save the content
-      const saveResult = await contentManager.updateContentSection(sectionType, state.content as Json);
+      const saveResult = await updateSection(sectionType, {
+        content: state.content as Json,
+        status: 'draft'
+      });
 
-      if (!saveResult.success) {
-        throw new Error(saveResult.error || "Failed to save content before publishing");
+      if (!saveResult) {
+        throw new Error("Failed to save content before publishing");
       }
 
       // Then publish it
-      const publishResult = await contentManager.publishContentSection(sectionType);
+      const publishResult = await publishSection(sectionType);
 
-      if (publishResult.success) {
+      if (publishResult) {
         setState(prev => ({
           ...prev,
           publishing: false,

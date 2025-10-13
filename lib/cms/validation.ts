@@ -11,16 +11,17 @@ const MediaAssetSchema = z.object({
 });
 
 const CTAButtonSchema = z.object({
-  text: z.string().min(1, "Button text is required").max(100, "Button text too long").optional(),
-  href: z.string().min(1, "Button URL is required").optional(),
-  variant: z.enum(["primary", "secondary", "outline"]).optional(),
-  is_external: z.boolean().optional(),
+  text: z.string().min(1, "Button text is required").max(100, "Button text too long"),
+  href: z.string().max(500, "Button URL too long").optional(),
+  variant: z.enum(["primary", "secondary", "outline"]).default("primary"),
+  is_external: z.boolean().default(false),
 }).transform((data) => {
-  // Provide default values for missing fields
+  // Ensure href has a default value
   return {
-    text: data.text || "Get Started",
-    href: data.href || "/contact",
-    is_external: data.is_external ?? false,
+    text: data.text,
+    href: data.href || '/contact',
+    variant: data.variant,
+    is_external: data.is_external,
   };
 });
 
@@ -345,46 +346,81 @@ export const PortfolioContentSchema = z.object({
 });
 
 export const DigitalPartnersContentSchema = z.object({
-  headline: z.string().min(1, "Headline is required").max(200, "Headline too long"),
-  description: z.string().min(1, "Description is required").max(1000, "Description too long"),
-  partners: z.array(
+  title: z.string().min(1, "Title is required").max(200, "Title too long"),
+  subtitle: z.string().min(1, "Subtitle is required").max(500, "Subtitle too long"),
+  partner_tags: z.array(
     z.object({
       id: z.string().uuid(),
-      name: z.string().min(1, "Partner name is required").max(100, "Name too long"),
-      description: z.string().min(1, "Partner description is required").max(500, "Description too long"),
-      logo: MediaAssetSchema,
-      partnership_type: z.enum(["technology", "integration", "reseller", "strategic"]),
-      website_url: z.string().url("Invalid website URL").optional(),
+      label: z.string().min(1, "Tag label is required").max(100, "Tag label too long"),
+      partners: z.array(
+        z.object({
+          id: z.string().uuid(),
+          logo: MediaAssetSchema.nullable(),
+        })
+      ).max(20, "Too many partners in tag"),
     })
-  ).max(50, "Too many partners"),
+  ).max(10, "Too many partner tags"),
 });
 
 export const CTAContentSchema = z.object({
-  headline: z.string().min(1, "Headline is required").max(200, "Headline too long"),
-  description: z.string().min(1, "Description is required").max(1000, "Description too long"),
-  background_image: MediaAssetSchema.optional(),
-  cta_button: CTAButtonSchema,
+  title: z.string().min(1, "Title is required").max(200, "Title too long"),
+  subtitle: z.string().min(1, "Subtitle is required").max(1000, "Subtitle too long"),
+  image: MediaAssetSchema.optional(),
+  primary_button: CTAButtonSchema,
+  secondary_button: z.object({
+    text: z.string().min(1, "Button text is required").max(100, "Button text too long"),
+    href: z.string().max(500, "Button URL too long").optional(),
+    variant: z.enum(["primary", "secondary", "outline"]).default("secondary"),
+    is_external: z.boolean().default(false),
+  }).transform((data) => ({
+    text: data.text,
+    href: data.href || '/about',
+    variant: data.variant,
+    is_external: data.is_external,
+  })).optional(),
 });
 
 export const FooterContentSchema = z.object({
-  company_info: z.object({
-    name: z.string().min(1, "Company name is required").max(100, "Name too long"),
-    description: z.string().min(1, "Description is required").max(500, "Description too long"),
-    logo: MediaAssetSchema.optional(),
+  logo: MediaAssetSchema.optional().transform(val => val || null),
+  description: z.string().max(1000, "Description too long").default("Creating exceptional digital experiences that help businesses thrive in the modern world."),
+  newsletter: z.object({
+    title: z.string().max(100, "Title too long").default("Stay Updated"),
+    description: z.string().max(500, "Description too long").default("Subscribe to our newsletter for the latest updates and insights"),
   }),
-  navigation_sections: z.array(
+  address: z.object({
+    street: z.string().max(200, "Address too long").default("123 Business Street"),
+    city: z.string().max(100, "City too long").default("New York"),
+    state: z.string().max(100, "State too long").default("NY"),
+    postal_code: z.string().max(20, "Postal code too long").default("10001"),
+    country: z.string().max(100, "Country too long").default("United States"),
+  }),
+  contacts: z.array(
     z.object({
-      title: z.string().min(1, "Section title is required").max(50, "Title too long"),
-      links: z.array(NavigationItemSchema).max(10, "Too many links"),
+      type: z.enum(["email", "phone", "whatsapp"]).default("email"),
+      label: z.string().max(50, "Label too long").default("Contact"),
+      value: z.string().max(200, "Value too long").default("contact@example.com"),
     })
-  ).max(5, "Too many navigation sections"),
+  ).max(5, "Too many contacts").default([]),
   social_links: z.array(
     z.object({
-      platform: z.enum(["twitter", "linkedin", "github", "instagram", "facebook"]),
-      url: z.string().url("Invalid social URL"),
+      platform: z.enum(["twitter", "linkedin", "github", "facebook", "instagram", "youtube"]).default("linkedin"),
+      url: z.string().max(500, "Social URL too long").optional().transform(val => {
+        if (!val || val.trim() === '') {
+          return "https://linkedin.com";
+        }
+        // Basic URL validation without strict .url() check
+        return val.startsWith('http') ? val : `https://${val}`;
+      }),
+      label: z.string().max(50, "Label too long").optional().transform(val => val || "@company"),
     })
-  ).max(10, "Too many social links"),
-  copyright_text: z.string().min(1, "Copyright text is required").max(200, "Text too long"),
+  ).max(10, "Too many social links").default([]),
+  footer_links: z.array(
+    z.object({
+      title: z.string().max(100, "Link text too long").default("Privacy Policy"),
+      href: z.string().max(500, "URL too long").default("/privacy"),
+    })
+  ).max(20, "Too many footer links").default([]),
+  copyright_text: z.string().max(200, "Text too long").default(`© ${new Date().getFullYear()} Your Company. All rights reserved.`),
 });
 
 // Section type to schema mapping
@@ -460,6 +496,46 @@ export function cleanContentForValidation(content: unknown): unknown {
         } else {
           cleaned[key] = null;
         }
+      } else if (
+        // Special handling for button objects to ensure they have required fields
+        (key === 'primary_button' || key === 'secondary_button') &&
+        typeof value === 'object' &&
+        value !== null &&
+        !Array.isArray(value)
+      ) {
+        const buttonObj = value as Record<string, unknown>;
+        cleaned[key] = {
+          text: buttonObj.text || 'Get Started',
+          href: buttonObj.href || '/contact',
+          is_external: buttonObj.is_external ?? false,
+          variant: buttonObj.variant || 'primary',
+        };
+      } else if (
+        // Special handling for social links to ensure they have valid URLs
+        key === 'social_links' && Array.isArray(value)
+      ) {
+        cleaned[key] = value.map((link: any) => ({
+          platform: link.platform || 'linkedin',
+          url: link.url && link.url.trim() ? link.url : 'https://linkedin.com',
+          label: link.label || '@company',
+        }));
+      } else if (
+        // Special handling for footer links
+        key === 'footer_links' && Array.isArray(value)
+      ) {
+        cleaned[key] = value.map((link: any) => ({
+          title: link.title || 'Privacy Policy',
+          href: link.href || '/privacy',
+        }));
+      } else if (
+        // Special handling for contacts
+        key === 'contacts' && Array.isArray(value)
+      ) {
+        cleaned[key] = value.map((contact: any) => ({
+          type: contact.type || 'email',
+          label: contact.label || 'Contact',
+          value: contact.value || 'contact@example.com',
+        }));
       } else {
         cleaned[key] = cleanContentForValidation(value);
       }
@@ -596,31 +672,79 @@ export function getDefaultSectionContent(sectionType: keyof typeof SectionValida
 
     case 'digital_partners':
       return {
-        headline: "Our Partners",
-        description: "We work with leading technology companies.",
-        partners: [],
+        title: "Digital Partner",
+        subtitle: "Your Trusted Digital Partner for Your Digital Transformation",
+        partner_tags: [],
       };
 
     case 'cta':
       return {
-        headline: "Ready to Get Started?",
-        description: "Contact us today to discuss your project.",
-        cta_button: {
-          text: "Contact Us",
+        title: "Ready to Start Your Project?",
+        subtitle: "Let's work together to bring your ideas to life. Get in touch with our team today.",
+        primary_button: {
+          text: "Get Started Now",
           href: "/contact",
-          variant: "primary",
+          is_external: false,
+        },
+        secondary_button: {
+          text: "Learn More",
+          href: "/about",
           is_external: false,
         },
       };
 
     case 'footer':
       return {
-        company_info: {
-          name: "Your Company",
-          description: "Your company description.",
+        description: "Creating exceptional digital experiences that help businesses thrive in the modern world.",
+        newsletter: {
+          title: "Stay Updated",
+          description: "Subscribe to our newsletter for the latest updates and insights",
         },
-        navigation_sections: [],
-        social_links: [],
+        address: {
+          street: "123 Business Street",
+          city: "New York",
+          state: "NY",
+          postal_code: "10001",
+          country: "United States",
+        },
+        contacts: [
+          {
+            type: "email",
+            label: "Email",
+            value: "contact@company.com",
+          },
+          {
+            type: "phone",
+            label: "Phone",
+            value: "+1 (555) 123-4567",
+          },
+        ],
+        social_links: [
+          {
+            platform: "linkedin",
+            url: "https://linkedin.com/company/yourcompany",
+            label: "@yourcompany",
+          },
+          {
+            platform: "twitter",
+            url: "https://twitter.com/yourcompany",
+            label: "@yourcompany",
+          },
+        ],
+        footer_links: [
+          {
+            title: "Privacy Policy",
+            href: "/privacy",
+          },
+          {
+            title: "Terms of Service",
+            href: "/terms",
+          },
+          {
+            title: "Cookie Policy",
+            href: "/cookies",
+          },
+        ],
         copyright_text: `© ${new Date().getFullYear()} Your Company. All rights reserved.`,
       };
 

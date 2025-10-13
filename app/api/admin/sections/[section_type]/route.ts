@@ -49,6 +49,12 @@ export const PUT = withDevelopmentBypass(async (
     const body = await request.json();
     const { content, status, title } = body;
 
+    // Debug logging for footer section
+    if (section_type === 'footer') {
+      console.log('Footer Content received:', JSON.stringify(content, null, 2));
+      console.log('Social links:', content.social_links);
+    }
+
     const section = await contentManager.upsertSection(section_type, {
       title,
       content,

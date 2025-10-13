@@ -16,6 +16,25 @@ export const POST = withDevelopmentBypass(async (request: Request) => {
     console.log('File:', file);
     console.log('Alt text:', altText);
 
+    // Check if environment variables are set
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY;
+
+    console.log('Supabase URL:', supabaseUrl ? 'SET' : 'NOT SET');
+    console.log('Supabase Service Key:', supabaseServiceKey ? 'SET' : 'NOT SET');
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      return NextResponse.json(
+        {
+          error: {
+            code: "CONFIG_ERROR",
+            message: "Supabase configuration is missing. Please check environment variables.",
+          },
+        },
+        { status: 500 }
+      );
+    }
+
     if (!file) {
       return NextResponse.json(
         {
@@ -43,10 +62,26 @@ export const POST = withDevelopmentBypass(async (request: Request) => {
     }
 
     console.log('Starting upload process...');
-    const result = await mediaManager.uploadFile(file, {
-      altText,
-      userId: null, // In development, don't associate with a user
-    });
+
+    let result;
+    try {
+      result = await mediaManager.uploadFile(file, {
+        altText,
+        userId: null, // In development, don't associate with a user
+      });
+    } catch (uploadError) {
+      console.error('MediaManager uploadFile threw an error:', uploadError);
+      return NextResponse.json(
+        {
+          error: {
+            code: "UPLOAD_EXCEPTION",
+            message: uploadError instanceof Error ? uploadError.message : "Unknown upload error",
+            details: uploadError instanceof Error ? uploadError.stack : undefined,
+          },
+        },
+        { status: 500 }
+      );
+    }
 
     console.log('Upload result:', result);
 

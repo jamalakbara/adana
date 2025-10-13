@@ -4,12 +4,35 @@ import React, { useState, useEffect, useRef } from "react";
 import { SectionContainer } from "@/components/ui/section-container";
 import { Typography } from "@/components/ui/typography";
 import { AnimatedButton } from "@/components/ui/animated-button";
+import { useSection } from "@/components/content/providers/ContentProvider";
 
 const imgRectangle25670 = "https://s3-alpha-sig.figma.com/img/d94d/04ad/ce8c83ee2e33c2825df3d199ace1b7ef?Expires=1760313600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=E~umgMLZsDCOwbOAFfjokf8DKPtR16GLC~mu3Y~rbUl8KLMX8dv-KnyL1LQuefLQ1GWLfKhkYG8yBO1u9xtg213K-9qBCohwB~VWDIagaytskOYgTNj30zsSq4TT1qi9Sa92svOySr-BrDMmFUbPCmt2SP97zS-lbFBPDC03HiS4j5Z7TOy4nUOIBJEldjYcHiQxGi66ln5xreHLLlBmIh10DONN0uRwRsrhpsV2ukofRlz1Vp3HUpCjSA2WC3hC4UfHCfCx8nE~wUAtT5gkQiLM~rSyPSUZjlUoHBKyTK0DQ7mkggQw2YwlUNaRFc2AnHt6-r-r8B2BdnMy6zs93g__";
 
 export function CtaSection() {
+  const { data: ctaContent, isLoaded } = useSection('cta');
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
+
+  // Get CMS data or use fallback content
+  const title = isLoaded && ctaContent?.title
+    ? ctaContent.title
+    : "Ready to Start Your Project?";
+
+  const subtitle = isLoaded && ctaContent?.subtitle
+    ? ctaContent.subtitle
+    : "Let's work together to bring your ideas to life. Get in touch with our team today.";
+
+  const backgroundImage = isLoaded && ctaContent?.image
+    ? ctaContent.image.url || ctaContent.image.supabase_url
+    : imgRectangle25670;
+
+  const primaryButton = isLoaded && ctaContent?.primary_button
+    ? ctaContent.primary_button
+    : { text: "Get Started Now", href: "/contact", is_external: false };
+
+  const secondaryButton = isLoaded && ctaContent?.secondary_button
+    ? ctaContent.secondary_button
+    : { text: "Learn More", href: "/about", is_external: false };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -56,7 +79,7 @@ export function CtaSection() {
           }}>
             <div className="relative w-full aspect-[1/1] sm:aspect-[4/3] md:aspect-[432/441] rounded-[16px] sm:rounded-[20px] md:rounded-[24px] overflow-hidden" data-node-id="115-10779">
               <img
-                src={imgRectangle25670}
+                src={backgroundImage}
                 alt="Digital transformation illustration"
                 className="w-full h-full object-cover"
               />
@@ -76,7 +99,7 @@ export function CtaSection() {
                 fontWeight: "500"
               }}
             >
-              Accelerate Your Digital Growth
+              {title}
             </Typography>
 
             <Typography
@@ -86,34 +109,50 @@ export function CtaSection() {
                 color: "#1E1E1E"
               }}
             >
-              Lorem ipsum dolor sit amet consectetur. Maecenas lorem massa eleifend commodo convallis. Pellentesque quis aliquet auctor ultricies. Viverra cursus amet mi pellentesque libero non.
+              {subtitle}
             </Typography>
 
             {/* Benefits */}
             <div className="flex flex-col sm:flex-row gap-6 mb-[24px] justify-center lg:justify-start" style={{
                 animation: isVisible ? 'fadeInUp 0.6s ease-out 0.8s both' : 'none'
               }}>
-              <AnimatedButton
-                variant="secondary"
-                hasArrow={true}
-                className="bg-[#1E1E1E]"
-                style={{
-                  animation: isVisible ? 'bounceIn 0.6s ease-out 1s both' : 'none'
-                }}
+              <a
+                href={primaryButton.href}
+                target={primaryButton.is_external ? "_blank" : "_self"}
+                rel={primaryButton.is_external ? "noopener noreferrer" : undefined}
+                className="inline-block"
               >
-                Free Consultation
-              </AnimatedButton>
+                <AnimatedButton
+                  variant="secondary"
+                  hasArrow={true}
+                  className="bg-[#1E1E1E]"
+                  style={{
+                    animation: isVisible ? 'bounceIn 0.6s ease-out 1s both' : 'none'
+                  }}
+                >
+                  {primaryButton.text}
+                </AnimatedButton>
+              </a>
 
-              <AnimatedButton
-                variant="ghost"
-                hasArrow={true}
-                className="bg-transparent"
-                style={{
-                  animation: isVisible ? 'bounceIn 0.6s ease-out 1.2s both' : 'none'
-                }}
-              >
-                Get 1 Month Free Service Charge
-              </AnimatedButton>
+              {secondaryButton && (
+                <a
+                  href={secondaryButton.href}
+                  target={secondaryButton.is_external ? "_blank" : "_self"}
+                  rel={secondaryButton.is_external ? "noopener noreferrer" : undefined}
+                  className="inline-block"
+                >
+                  <AnimatedButton
+                    variant="ghost"
+                    hasArrow={true}
+                    className="bg-transparent"
+                    style={{
+                      animation: isVisible ? 'bounceIn 0.6s ease-out 1.2s both' : 'none'
+                    }}
+                  >
+                    {secondaryButton.text}
+                  </AnimatedButton>
+                </a>
+              )}
             </div>
           </div>
         </div>

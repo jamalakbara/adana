@@ -190,26 +190,63 @@ export const fallbackContent: ContentSections = {
   },
 
   "digital-partners": {
-    title: "Our Digital Partners",
-    description: "We collaborate with industry leaders to deliver exceptional results",
-    partners: [
+    title: "Digital Partner",
+    subtitle: "Your Trusted Digital Partner for Your Digital Transformation",
+    partner_tags: [
       {
-        name: "Cloud Services Inc",
-        logo: null,
-        description: "Reliable cloud infrastructure and hosting solutions for optimal performance.",
-        website_url: "https://cloudservices.com",
+        id: "default-agency-partners",
+        label: "Agency Partner",
+        partners: [
+          { id: "default-agency-1", logo: null },
+          { id: "default-agency-2", logo: null },
+          { id: "default-agency-3", logo: null },
+          { id: "default-agency-4", logo: null },
+        ],
       },
       {
-        name: "Payment Gateway Pro",
-        logo: null,
-        description: "Secure and efficient payment processing solutions for e-commerce.",
-        website_url: "https://paymentgateway.com",
+        id: "default-publisher-partners",
+        label: "Publisher Partner",
+        partners: [
+          { id: "default-publisher-1", logo: null },
+          { id: "default-publisher-2", logo: null },
+        ],
       },
       {
-        name: "Analytics Plus",
-        logo: null,
-        description: "Advanced analytics and insights to drive data-informed decisions.",
-        website_url: "https://analyticsplus.com",
+        id: "default-ecommerce-partners",
+        label: "e-Commerce Platform",
+        partners: [
+          { id: "default-ecommerce-1", logo: null },
+          { id: "default-ecommerce-2", logo: null },
+          { id: "default-ecommerce-3", logo: null },
+        ],
+      },
+      {
+        id: "default-marketplace-partners",
+        label: "Marketplace Partner",
+        partners: [
+          { id: "default-marketplace-1", logo: null },
+          { id: "default-marketplace-2", logo: null },
+        ],
+      },
+      {
+        id: "default-email-partners",
+        label: "Email Marketing Partner",
+        partners: [
+          { id: "default-email-1", logo: null },
+          { id: "default-email-2", logo: null },
+          { id: "default-email-3", logo: null },
+          { id: "default-email-4", logo: null },
+        ],
+      },
+      {
+        id: "default-social-partners",
+        label: "Social Partner",
+        partners: [
+          { id: "default-social-1", logo: null },
+          { id: "default-social-2", logo: null },
+          { id: "default-social-3", logo: null },
+          { id: "default-social-4", logo: null },
+        ],
       },
     ],
   },
