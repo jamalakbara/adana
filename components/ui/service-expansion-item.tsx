@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { AnimatedButton } from "./animated-button";
 
 interface ServiceExpansionItemProps {
@@ -41,17 +42,20 @@ export function ServiceExpansionItem({
       data-node-id={nodeId}
     >
       <div
-        className={`flex flex-col justify-between sm:flex-row sm:gap-8 transition-colors duration-300 ${
+        className={`flex flex-col sm:flex-row sm:gap-8 transition-colors duration-300 ${
           isExpanded
             ? 'bg-[#334e4d]'
             : 'bg-[#FCFCF4] hover:bg-[#f5f5ed]'
         } ${imagePosition === 'left' ? 'sm:flex-row-reverse' : ''}`}
         onClick={onToggle}
+        style={{
+          backgroundColor: isExpanded ? '#334e4d' : '#FCFCF4'
+        }}
       >
         {/* Content Side */}
-        <div className="flex flex-col justify-center p-4 sm:p-5 md:p-6 flex-1 max-w-[546px] sm:max-w-none">
-          <h2 className={`font-['Public_Sans'] text-[18px] sm:text-[24px] font-normal leading-normal self-stretch ${
-            isExpanded ? 'text-white' : 'text-[#1E1E1E]'
+        <div className="flex flex-col justify-center p-4 sm:p-5 md:p-6 flex-1 max-w-[546px] sm:max-w-none sm:justify-center">
+          <h2 className={`font-['Public_Sans'] text-[18px] sm:text-[24px] font-normal leading-normal self-stretch transition-colors duration-300 ${
+            isExpanded ? '!text-white' : '!text-[#1E1E1E]'
           }`}>
             {title}
           </h2>
@@ -60,7 +64,7 @@ export function ServiceExpansionItem({
             <>
               <div className="mb-[12px] sm:mb-[14px] md:mb-[16px]"></div>
               <div
-                className="font-['Public_Sans'] text-[14px] font-normal leading-[20px] self-stretch text-white"
+                className="font-['Public_Sans'] text-[14px] font-normal leading-[20px] self-stretch !text-white transition-colors duration-300"
                 dangerouslySetInnerHTML={{ __html: description }}
               />
 
@@ -90,10 +94,12 @@ export function ServiceExpansionItem({
 
         {/* Image Side */}
         {imageUrl && isExpanded && (
-          <div className="relative w-full aspect-square sm:w-[300px] sm:h-[300px] overflow-hidden flex-shrink-0">
-            <img
+          <div className="relative w-full sm:w-[300px] h-[300px] sm:h-auto sm:self-stretch overflow-hidden flex-shrink-0">
+            <Image
               src={imageUrl}
               alt={title}
+              width={300}
+              height={300}
               className="w-full h-full object-cover"
             />
           </div>

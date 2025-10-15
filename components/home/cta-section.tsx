@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { SectionContainer } from "@/components/ui/section-container";
 import { Typography } from "@/components/ui/typography";
 import { AnimatedButton } from "@/components/ui/animated-button";
@@ -78,9 +79,11 @@ export function CtaSection() {
             animation: isVisible ? 'slideInLeft 0.8s ease-out 0.4s both' : 'none'
           }}>
             <div className="relative w-full aspect-[1/1] sm:aspect-[4/3] md:aspect-[432/441] rounded-[16px] sm:rounded-[20px] md:rounded-[24px] overflow-hidden" data-node-id="115-10779">
-              <img
+            <img
                 src={backgroundImage}
                 alt="Digital transformation illustration"
+                width={432}
+                height={441}
                 className="w-full h-full object-cover"
               />
             </div>

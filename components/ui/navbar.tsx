@@ -119,7 +119,23 @@ export function Navbar({ className }: NavbarProps) {
                   href={item.href}
                   target={item.is_external ? "_blank" : "_self"}
                   rel={item.is_external ? "noopener noreferrer" : undefined}
-                  className="relative text-[#1E1E1E] text-[14px] font-normal transition-all duration-300 hover:text-[#334e4d] hover:font-medium after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#334e4d] after:transition-all after:duration-300 hover:after:w-full"
+                  onClick={(e) => {
+                    if (!item.is_external && item.href.startsWith('#')) {
+                      e.preventDefault();
+                      const element = document.querySelector(item.href);
+                      if (element) {
+                        const navbarHeight = 80; // Account for fixed navbar height
+                        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                        const offsetPosition = elementPosition - navbarHeight;
+
+                        window.scrollTo({
+                          top: offsetPosition,
+                          behavior: 'smooth'
+                        });
+                      }
+                    }
+                  }}
+                  className="relative text-[#1E1E1E] text-[14px] font-normal transition-all duration-300 hover:text-[#334e4d] hover:font-medium after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#334e4d] after:transition-all after:duration-300 hover:after:w-full cursor-pointer"
                   style={{
                     color: "#1E1E1E",
                     fontFamily: "Geist",
@@ -165,7 +181,24 @@ export function Navbar({ className }: NavbarProps) {
                     href={item.href}
                     target={item.is_external ? "_blank" : "_self"}
                     rel={item.is_external ? "noopener noreferrer" : undefined}
-                    className="block w-full text-left text-[#1E1E1E] text-[14px] font-normal transition-all duration-300 hover:text-[#334e4d] hover:font-medium py-3 px-4 hover:bg-[#f1ff66]/10"
+                    onClick={(e) => {
+                      if (!item.is_external && item.href.startsWith('#')) {
+                        e.preventDefault();
+                        const element = document.querySelector(item.href);
+                        if (element) {
+                          const navbarHeight = 80; // Account for fixed navbar height
+                          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                          const offsetPosition = elementPosition - navbarHeight;
+
+                          window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                          });
+                          setIsMenuOpen(false);
+                        }
+                      }
+                    }}
+                    className="block w-full text-left text-[#1E1E1E] text-[14px] font-normal transition-all duration-300 hover:text-[#334e4d] hover:font-medium py-3 px-4 hover:bg-[#f1ff66]/10 cursor-pointer"
                     style={{
                       color: "#1E1E1E",
                       fontFamily: "Geist",
@@ -174,7 +207,6 @@ export function Navbar({ className }: NavbarProps) {
                       fontWeight: "400",
                       lineHeight: "normal"
                     }}
-                    onClick={() => setIsMenuOpen(false)}
                   >
                     {item.text}
                   </a>

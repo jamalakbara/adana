@@ -24,11 +24,11 @@ export function MarqueeClients() {
   // Use CMS logos if available, otherwise use defaults
   const clientLogos = cmsClientLogos.length > 0 ? cmsClientLogos : defaultClientLogos;
   return (
-    <section className="relative bg-[#334e4d] h-[160px] overflow-hidden">
+    <section id="marquee-clients" className="relative bg-[#334e4d] h-[160px] overflow-hidden">
       {/* Marquee content */}
       <div className="absolute h-[40px] top-[59px] overflow-hidden w-full">
         <div className="flex gap-[64px] items-center animate-marquee whitespace-nowrap group hover:animate-marquee-pause">
-          {/* Generate client logos dynamically with multiple sets for seamless loop */}
+      {/* Generate client logos dynamically with multiple sets for seamless loop */}
           {[...clientLogos, ...clientLogos, ...clientLogos].map((logoUrl, index) => (
             <div
               key={`client-${index}`}
