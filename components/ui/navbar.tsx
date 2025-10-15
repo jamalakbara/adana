@@ -1,17 +1,17 @@
 "use client";
 
 import React from "react";
-import { ExternalLink, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AdanaLogo } from "@/components/ui/adana-logo";
 import { DiscussButton } from "@/components/ui/discuss-button";
 import { cn } from "@/lib/utils";
 
 const navigationItems = [
-  { name: "Our Services", href: "#" },
-  { name: "About Us", href: "#" },
-  { name: "Portfolio", href: "#" },
-  { name: "Digital Partner", href: "#" },
+  { name: "Our Services", href: "#services" },
+  { name: "About Us", href: "#about" },
+  { name: "Portfolio", href: "#portfolio" },
+  { name: "Digital Partner", href: "#digital-partners" },
 ];
 
 interface NavbarProps {
@@ -79,7 +79,21 @@ export function Navbar({ className }: NavbarProps) {
                 <a
                   key={item.name}
                   href={item.href}
-                  className="relative text-[#1E1E1E] text-[14px] font-normal transition-all duration-300 hover:text-[#334e4d] hover:font-medium after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#334e4d] after:transition-all after:duration-300 hover:after:w-full"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const element = document.querySelector(item.href);
+                    if (element) {
+                      const navbarHeight = isScrolled ? 80 : 80; // Account for fixed navbar height
+                      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                      const offsetPosition = elementPosition - navbarHeight;
+
+                      window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                      });
+                    }
+                  }}
+                  className="relative text-[#1E1E1E] text-[14px] font-normal transition-all duration-300 hover:text-[#334e4d] hover:font-medium after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#334e4d] after:transition-all after:duration-300 hover:after:w-full cursor-pointer"
                   style={{
                     color: "#1E1E1E",
                     fontFamily: "Geist",
@@ -109,7 +123,22 @@ export function Navbar({ className }: NavbarProps) {
                 <div key={item.name} className="border-b border-[#e5e5e5] last:border-b-0">
                   <a
                     href={item.href}
-                    className="block w-full text-left text-[#1E1E1E] text-[14px] font-normal transition-all duration-300 hover:text-[#334e4d] hover:font-medium py-3 px-4 hover:bg-[#f1ff66]/10"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const element = document.querySelector(item.href);
+                      if (element) {
+                        const navbarHeight = 80; // Account for fixed navbar height
+                        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                        const offsetPosition = elementPosition - navbarHeight;
+
+                        window.scrollTo({
+                          top: offsetPosition,
+                          behavior: 'smooth'
+                        });
+                        setIsMenuOpen(false);
+                      }
+                    }}
+                    className="block w-full text-left text-[#1E1E1E] text-[14px] font-normal transition-all duration-300 hover:text-[#334e4d] hover:font-medium py-3 px-4 hover:bg-[#f1ff66]/10 cursor-pointer"
                     style={{
                       color: "#1E1E1E",
                       fontFamily: "Geist",
@@ -118,7 +147,6 @@ export function Navbar({ className }: NavbarProps) {
                       fontWeight: "400",
                       lineHeight: "normal"
                     }}
-                    onClick={() => setIsMenuOpen(false)}
                   >
                     {item.name}
                   </a>

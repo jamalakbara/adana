@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
+import Image from "next/image";
+import { Typography } from "@/components/ui/typography";
+import { PortfolioModal } from "./portfolio-modal";
 
 const portfolioItems = [
   {
@@ -9,10 +12,11 @@ const portfolioItems = [
     category: "Performance Marketing",
     client: "Cloxvox",
     description: "During their launch in Indonesia, world maximize their visibility and acquisition using performance media strategy on Meta, Tiktok, and Google Ads.",
-    bgColor: "bg-[#fcfcf4]",
+    bgColor: "bg-[#334e4d]",
     textColor: "text-[#1e1e1e]",
     borderColor: "border-[#dedacf]",
-    logo: "https://www.figma.com/api/mcp/asset/6d632dbb-9fff-4acb-b598-1f741917584c",
+    logo: "/logo-portofolio-1.png",
+    backgroundImage: "/portfolio-1.png",
   },
   {
     id: 2,
@@ -22,16 +26,18 @@ const portfolioItems = [
     bgColor: "bg-[#334e4d]",
     textColor: "text-white",
     borderColor: "border-[#dedacf]",
-    logo: "https://www.figma.com/api/mcp/asset/5c2175c8-ffdb-41b6-a011-ec10823f36d7",
+    logo: "/logo-portofolio-2.png",
+    backgroundImage: "/portfolio-1.png",
   },
   {
     id: 3,
     category: "Digital Media Buying",
     client: "Telkomsel",
     description: "During their launch in Indonesia, world maximize their visibility and acquisition using performance media strategy on Meta, Tiktok, and Google Ads.",
-    bgColor: "bg-[#1e1e1e]",
+    bgColor: "bg-[#334e4d]",
     textColor: "text-white",
-    logo: "https://www.figma.com/api/mcp/asset/619d5dcb-14d5-4c5a-8f44-f9157ff9037c",
+    logo: "/logo-portofolio-3.png",
+    backgroundImage: "/portfolio-1.png",
   },
 ];
 
@@ -45,6 +51,7 @@ const truncateWords = (text: string, maxWords: number) => {
 export function PortfolioSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+  const [selectedModalItem, setSelectedModalItem] = useState<typeof portfolioItems[0] | null>(null);
 
   const itemsPerPage = 4; // Show 4 small cards (2x2 grid)
   const maxVisibleItems = 5; // Maximum recommended items before showing pagination
@@ -71,6 +78,15 @@ export function PortfolioSection() {
 
   const selectedItem = portfolioItems[activeIndex];
 
+  // Modal functions
+  const openModal = (item: typeof portfolioItems[0]) => {
+    setSelectedModalItem(item);
+  };
+
+  const closeModal = () => {
+    setSelectedModalItem(null);
+  };
+
   // Get other items for display
   let otherItems = portfolioItems.filter((_, index) => index !== activeIndex);
 
@@ -79,7 +95,7 @@ export function PortfolioSection() {
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     // Get current page items, but exclude the selected item if it's in this page
-    let pageItems = portfolioItems.slice(startIndex, endIndex);
+    const pageItems = portfolioItems.slice(startIndex, endIndex);
     otherItems = pageItems.filter((_, index) => {
       const globalIndex = startIndex + index;
       return globalIndex !== activeIndex;
@@ -87,22 +103,25 @@ export function PortfolioSection() {
   }
 
   return (
-    <section className="py-16 lg:py-24 bg-[#fcfcf4]">
+    <section id="portfolio" className="py-16 lg:py-24 bg-[#fcfcf4]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12 lg:mb-16">
-          <p className="text-[16px] font-medium text-[#1e1e1e] mb-4">Our Portfolio</p>
-          <h2 className="text-[36px] lg:text-[44px] font-['Public_Sans',_sans-serif] font-normal text-[#1e1e1e] text-center leading-tight">
+          <Typography variant="section-label" className="mb-4">
+            Our Portfolio
+          </Typography>
+          <Typography variant="section-title" className="text-center">
             Our Work Speaks for Itself
             <br className="hidden sm:block" />
             A Showcase of What We Do Best
-          </h2>
+          </Typography>
         </div>
 
         {/* Portfolio Layout */}
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-12 items-start">
           {/* Large Selected Card - Left Side */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 w-full lg:w-[660px]">
+            {/* Mobile/Tablet Card - Shows bgColor only */}
             <div
               className={`
                 ${selectedItem.bgColor}
@@ -113,16 +132,75 @@ export function PortfolioSection() {
                 hover:shadow-xl
                 relative
                 group
-                w-full lg:w-[660px]
+                h-[200px] lg:hidden
+              `}
+            >
+              {/* Mobile/Tablet Content */}
+              {/* Logo */}
+              <div className="absolute top-8 left-6 z-10">
+                <div className="w-[130px] h-[21px] overflow-hidden">
+                  <Image
+                    src={selectedItem.logo}
+                    alt={selectedItem.client}
+                    width={130}
+                    height={21}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="absolute bottom-0 left-0 right-0 p-6">
+                <div className="flex flex-col gap-6">
+                  {/* View Detail Button */}
+                  <div
+                    onClick={() => openModal(selectedItem)}
+                    className="flex items-center gap-2 cursor-pointer group/button"
+                  >
+                    <span className={`text-[14px] font-normal text-right text-white group-hover/button:opacity-80 transition-opacity`}>
+                      View Detail
+                    </span>
+                    <div className="flex items-center justify-center w-5 h-5">
+                      <ChevronRight
+                        className="w-4 h-4 -rotate-90 text-white group-hover/button:translate-x-0.5 transition-transform"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop Card - Shows backgroundImage or bgColor */}
+            <div
+              className={`
+                hidden lg:block
+                ${selectedItem.bgColor}
+                ${selectedItem.borderColor ? 'border' : ''}
+                rounded-[24px]
+                overflow-hidden
+                transition-all duration-500
+                hover:shadow-xl
+                relative
+                group
                 h-[342px] lg:h-[684px]
               `}
+              style={{
+                ...(selectedItem.backgroundImage && {
+                  backgroundImage: `url(${selectedItem.backgroundImage})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                })
+              }}
             >
               {/* Logo */}
               <div className="absolute top-8 lg:top-12 left-6 lg:left-8 z-10">
                 <div className="w-[130px] h-[21px] lg:w-[270px] lg:h-[50px] overflow-hidden">
-                  <img
+                  <Image
                     src={selectedItem.logo}
                     alt={selectedItem.client}
+                    width={270}
+                    height={50}
                     className="w-full h-full object-contain"
                   />
                 </div>
@@ -131,69 +209,79 @@ export function PortfolioSection() {
               {/* Content */}
               <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-12">
                 <div className="flex flex-col gap-6 lg:gap-8">
-                  <div className="flex flex-col gap-3 lg:gap-4">
-                    <p className={`text-[14px] lg:text-[18px] font-normal ${selectedItem.textColor} opacity-90`}>
+                  {/* Desktop: Category, Client, Description - Always Visible */}
+                  <div className="flex flex-col gap-3 gap-4">
+                    <p className={`text-[18px] font-normal ${
+                      selectedItem.backgroundImage ? 'text-white' : selectedItem.textColor
+                    } opacity-90`}>
                       {selectedItem.category}
                     </p>
-                    <p className={`text-[18px] lg:text-[32px] font-medium ${selectedItem.textColor}`}>
+                    <p className={`text-[32px] font-medium ${
+                      selectedItem.backgroundImage ? 'text-white' : selectedItem.textColor
+                    }`}>
                       {selectedItem.client}
                     </p>
-                    <p className={`text-[14px] lg:text-[18px] font-normal leading-[20px] lg:leading-[28px] ${
-                      selectedItem.textColor === 'text-white' ? 'text-white opacity-80' : 'text-[#646464]'
-                    } line-clamp-4 lg:line-clamp-6`}>
+                    <p className={`text-[18px] font-normal leading-[28px] ${
+                      selectedItem.backgroundImage ? 'text-white opacity-80' :
+                      (selectedItem.textColor === 'text-white' ? 'text-white opacity-80' : 'text-[#646464]')
+                    } line-clamp-6`}>
                       {truncateWords(selectedItem.description, 15)}
                     </p>
                   </div>
 
-                  {/* View Detail Button */}
-                  <div className="flex items-center gap-2 cursor-pointer group/button">
-                    <span className={`text-[14px] lg:text-[16px] font-normal text-right ${
-                      selectedItem.textColor === 'text-white' ? 'text-white' : 'text-[#5d93ad]'
-                    } group-hover/button:opacity-80 transition-opacity`}>
+                  {/* View Detail Button - Always Visible */}
+                  <div
+                    onClick={() => openModal(selectedItem)}
+                    className="flex items-center gap-2 cursor-pointer group/button"
+                  >
+                    <span className="text-[16px] font-normal text-right text-white group-hover/button:opacity-80 transition-opacity">
                       View Detail
                     </span>
-                    <div className="flex items-center justify-center w-5 h-5 lg:w-6 lg:h-6">
+                    <div className="flex items-center justify-center w-6 h-6">
                       <ChevronRight
-                        className={`w-4 h-4 lg:w-5 lg:h-5 -rotate-90 ${
-                          selectedItem.textColor === 'text-white' ? 'text-white' : 'text-[#5d93ad]'
-                        } group-hover/button:translate-x-0.5 transition-transform`}
+                        className="w-5 h-5 -rotate-90 text-white group-hover/button:translate-x-0.5 transition-transform"
                       />
                     </div>
                   </div>
                 </div>
               </div>
+
             </div>
-          </div>
+        </div>
 
           {/* Right Side - Half-Sectioned Cards */}
-          <div className="w-full" style={{ height: '342px' }}>
+          <div className="w-full lg:w-auto lg:flex-1" style={{ height: '342px' }}>
             <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 lg:gap-6 h-full">
               {otherItems.length > 0 ? (
-                otherItems.map((item) => (
-                  <div
-                    key={item.id}
-                    onClick={() => setActiveIndex(portfolioItems.findIndex(p => p.id === item.id))}
-                    className={`
-                      rounded-[16px] lg:rounded-[24px]
-                      border border-[#DEDACF]
-                      bg-[#FCFCF4]
-                      overflow-hidden
-                      transition-all duration-300
-                      hover:bg-[#334E4D]
-                      hover:shadow-lg
-                      cursor-pointer
-                      relative
-                      group
-                      w-full
-                      h-full
-                    `}
-                  >
+                otherItems.map((item) => {
+                  const itemGlobalIndex = portfolioItems.findIndex(p => p.id === item.id);
+                  const isSelected = itemGlobalIndex === activeIndex;
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => openModal(item)}
+                      className={`
+                        rounded-[16px] lg:rounded-[24px]
+                        border border-[#DEDACF]
+                        ${isSelected ? 'bg-[#334E4D]' : 'bg-[#FCFCF4]'}
+                        overflow-hidden
+                        transition-all duration-300
+                        ${!isSelected ? 'hover:bg-[#334E4D] hover:shadow-lg' : 'shadow-lg'}
+                        cursor-pointer
+                        relative
+                        group
+                        w-full
+                        h-full
+                      `}
+                    >
                     {/* Logo */}
                     <div className="absolute top-3 lg:top-4 left-3 lg:left-4 z-10">
                       <div className="w-[60px] h-[12px] lg:w-[80px] lg:h-[14px] overflow-hidden">
-                        <img
+                        <Image
                           src={item.logo}
                           alt={item.client}
+                          width={80}
+                          height={14}
                           className="w-full h-full object-contain filter invert group-hover:invert-0"
                         />
                       </div>
@@ -203,32 +291,49 @@ export function PortfolioSection() {
                     <div className="absolute bottom-0 left-0 right-0 p-3 lg:p-4">
                       <div className="flex flex-col gap-2 lg:gap-3">
                         <div className="flex flex-col gap-1">
-                          <p className="text-[10px] lg:text-[12px] font-normal text-[#1e1e1e] opacity-90 group-hover:text-white line-clamp-1">
+                          <p className={`text-[10px] lg:text-[12px] font-normal ${
+                            isSelected ? 'text-white opacity-90' : 'text-[#1e1e1e] opacity-90 group-hover:text-white'
+                          } line-clamp-1`}>
                             {item.category}
                           </p>
-                          <p className="text-[12px] lg:text-[14px] font-medium text-[#1e1e1e] group-hover:text-white line-clamp-1">
+                          <p className={`text-[12px] lg:text-[14px] font-medium ${
+                            isSelected ? 'text-white' : 'text-[#1e1e1e] group-hover:text-white'
+                          } line-clamp-1`}>
                             {item.client}
                           </p>
-                          <p className="text-[9px] lg:text-[11px] font-normal leading-[12px] lg:leading-[14px] text-[#646464] group-hover:text-white opacity-80 line-clamp-2">
+                          <p className={`text-[9px] lg:text-[11px] font-normal leading-[12px] lg:leading-[14px] ${
+                            isSelected ? 'text-white opacity-80' : 'text-[#646464] group-hover:text-white opacity-80'
+                          } line-clamp-2`}>
                             {truncateWords(item.description, 8)}
                           </p>
                         </div>
 
                         {/* View Detail Button */}
-                        <div className="flex items-center gap-1 cursor-pointer group/button">
-                          <span className="text-[10px] lg:text-[12px] font-normal text-right text-[#5d93ad] group-hover:text-white group-hover/button:opacity-80 transition-opacity">
+                        <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openModal(item);
+                        }}
+                        className="flex items-center gap-1 cursor-pointer group/button"
+                      >
+                          <span className={`text-[10px] lg:text-[12px] font-normal text-right ${
+                            isSelected ? 'text-white' : 'text-[#5d93ad] group-hover:text-white'
+                          } group-hover/button:opacity-80 transition-opacity`}>
                             View Detail
                           </span>
                           <div className="flex items-center justify-center w-3 h-3 lg:w-4 lg:h-4">
                             <ChevronRight
-                              className="w-2 h-2 lg:w-3 h-3 -rotate-90 text-[#5d93ad] group-hover:text-white group-hover/button:translate-x-0.5 transition-transform"
+                              className={`w-2 h-2 lg:w-3 h-3 -rotate-90 ${
+                                isSelected ? 'text-white' : 'text-[#5d93ad] group-hover:text-white'
+                              } group-hover/button:translate-x-0.5 transition-transform`}
                             />
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                ))
+                  );
+                })
               ) : (
                 <div className="col-span-2 flex items-center justify-center text-gray-500">
                   <p>No other items to display</p>
@@ -237,17 +342,9 @@ export function PortfolioSection() {
             </div>
 
             {/* Navigation Controls - Positioned at bottom of quartered cards */}
-            <div className="flex items-center justify-between pt-2">
-              <button
-                onClick={prevSlide}
-                className="w-11 h-11 rounded-[12px] bg-[#eceae4] hover:bg-[#d4d4ce] transition-colors flex items-center justify-center group"
-                aria-label="Previous portfolio item"
-              >
-                <ChevronRight className="w-6 h-6 rotate-180 text-[#1e1e1e] group-hover:scale-110 transition-transform" />
-              </button>
-
+            <div className="flex items-center justify-between pt-2 gap-4">
               {/* Progress Indicators */}
-              <div className="flex-1 mx-4">
+              <div className="flex-1">
                 <div className="relative w-full h-0.5 bg-[#eceae4]">
                   <div
                     className="absolute top-0 left-0 h-full bg-[#334e4d] transition-all duration-300"
@@ -261,8 +358,16 @@ export function PortfolioSection() {
               </div>
 
               <button
+                onClick={prevSlide}
+                className="w-11 h-11 rounded-[12px] bg-[#eceae4] hover:bg-[#f1ff66] active:bg-[#f1ff66] transition-colors flex items-center justify-center group"
+                aria-label="Previous portfolio item"
+              >
+                <ChevronRight className="w-6 h-6 rotate-180 text-[#1e1e1e] group-hover:scale-110 transition-transform" />
+              </button>
+
+              <button
                 onClick={nextSlide}
-                className="w-11 h-11 rounded-[12px] bg-[#f1ff66] hover:bg-[#e5ff4d] transition-colors flex items-center justify-center group"
+                className="w-11 h-11 rounded-[12px] bg-[#eceae4] hover:bg-[#f1ff66] active:bg-[#f1ff66] transition-colors flex items-center justify-center group"
                 aria-label="Next portfolio item"
               >
                 <ChevronRight className="w-6 h-6 text-[#1e1e1e] group-hover:scale-110 transition-transform" />
@@ -271,6 +376,15 @@ export function PortfolioSection() {
           </div>
         </div>
       </div>
+
+      {/* Portfolio Modal */}
+      {selectedModalItem && (
+        <PortfolioModal
+          isOpen={!!selectedModalItem}
+          onClose={closeModal}
+          item={selectedModalItem}
+        />
+      )}
     </section>
   );
 }

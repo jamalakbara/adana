@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { SectionContainer } from "@/components/ui/section-container";
 import { Typography } from "@/components/ui/typography";
 
@@ -78,9 +79,11 @@ function PartnerCard({ imageSrc, alt, index = 0 }: PartnerCardProps & { index?: 
         animationDelay: `${index * 0.1}s`
       }}
     >
-      <img
+      <Image
         src={imageSrc}
         alt={alt}
+        width={152}
+        height={40}
         className="max-h-[30px] sm:max-h-[35px] md:max-h-[40px] max-w-[100px] sm:max-w-[120px] md:max-w-[152px] object-contain transition-transform duration-300 hover:scale-110"
       />
     </div>
@@ -94,7 +97,7 @@ export function DigitalPartner() {
   const isSmallList = currentPartners.length <= 3;
 
   return (
-    <SectionContainer background="light" padding="xl" maxWidth="xl" nodeId="213-124">
+    <SectionContainer background="light" padding="xl" maxWidth="xl" nodeId="213-124" id="digital-partners">
         {/* Section title */}
         <div className="text-center mb-[12px]">
           <Typography

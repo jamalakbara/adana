@@ -10,7 +10,7 @@ export function ServicesSection() {
   const [expandedService, setExpandedService] = useState<string | null>(servicesData[0]?.id || null);
 
   return (
-    <SectionContainer background="light" padding="xl" maxWidth="xl" nodeId="201:94">
+    <SectionContainer background="light" padding="xl" maxWidth="xl" nodeId="201:94" id="services">
       {/* Section header */}
       <div className="mb-[58px]">
         <Typography variant="section-label" nodeId="115:10796" className="mb-[12px]">
@@ -26,9 +26,10 @@ export function ServicesSection() {
             </Typography>
           </div>
 
-          <Typography variant="section-description" className="w-full max-w-full sm:max-w-[400px] md:max-w-[432px] mt-4 sm:mt-0" nodeId="115:10871">
+          {/* Section description hidden */}
+          {/* <Typography variant="section-description" className="w-full max-w-full sm:max-w-[400px] md:max-w-[432px] mt-4 sm:mt-0" nodeId="115:10871">
             Lorem ipsum dolor sit amet consectetur. Maecenas lorem massa eleifend commodo convallis. Pellentesque quis aliquet auctor ultricies. Viverra cursus amet mi pellentesque libero non.
-          </Typography>
+          </Typography> */}
         </div>
       </div>
 
@@ -39,7 +40,7 @@ export function ServicesSection() {
             key={service.id}
             title={service.title}
             description={service.description}
-            imageUrl="https://s3-alpha-sig.figma.com/img/a6ca/e0eb/c62f77205434383aa4fa6abda5c879d2?Expires=1759708800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=bc1vW0nSVsqCzJp-aLwT-5LNxLKokqNHDauxBQua0CoW~gThFF2DU3KPBbqkFGS-S48GutO7~kmrfIbQT9WZjYUgYskNd4FKkFEPi0zAs8LozbY7HZfD4Z0OQnDgxvfjPB5lxuizflRNZ~NdRiMD6ijpSnyeKT5hliROJjLk9MhQHe7iuQ3L3So4x0X5VJGXvmzcS7UiV91L3gJ76CJ8kShFtOqlmfgQRrzTep71EmeqkqI2FwJ0auXCZW-iCECBleeAHv50oKFX9PPlvSXPntjWaT1S9j3FEXSFRKdQO7plHY8BIJ2kVVWduxIxvDyG2~JnnNf~OHOgnjpKkRZRjg__"
+            imageUrl={service.image}
             isExpanded={expandedService === service.id}
             onToggle={() => {
               setExpandedService(expandedService === service.id ? null : service.id);
