@@ -6,7 +6,6 @@ import { SectionContainer } from "@/components/ui/section-container";
 import { Typography } from "@/components/ui/typography";
 import { AnimatedButton } from "@/components/ui/animated-button";
 
-const imgRectangle25670 = "https://s3-alpha-sig.figma.com/img/d94d/04ad/ce8c83ee2e33c2825df3d199ace1b7ef?Expires=1760313600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=E~umgMLZsDCOwbOAFfjokf8DKPtR16GLC~mu3Y~rbUl8KLMX8dv-KnyL1LQuefLQ1GWLfKhkYG8yBO1u9xtg213K-9qBCohwB~VWDIagaytskOYgTNj30zsSq4TT1qi9Sa92svOySr-BrDMmFUbPCmt2SP97zS-lbFBPDC03HiS4j5Z7TOy4nUOIBJEldjYcHiQxGi66ln5xreHLLlBmIh10DONN0uRwRsrhpsV2ukofRlz1Vp3HUpCjSA2WC3hC4UfHCfCx8nE~wUAtT5gkQiLM~rSyPSUZjlUoHBKyTK0DQ7mkggQw2YwlUNaRFc2AnHt6-r-r8B2BdnMy6zs93g__";
 
 export function CtaSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -57,7 +56,7 @@ export function CtaSection() {
           }}>
             <div className="relative w-full aspect-[1/1] sm:aspect-[4/3] md:aspect-[432/441] rounded-[16px] sm:rounded-[20px] md:rounded-[24px] overflow-hidden" data-node-id="115-10779">
               <Image
-                src={imgRectangle25670}
+                src="/cta-image.png"
                 alt="Digital transformation illustration"
                 width={432}
                 height={441}
