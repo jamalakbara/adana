@@ -54,7 +54,7 @@ export function AnimatedButton({
   type = "button",
   style
 }: AnimatedButtonProps) {
-  const baseClasses = "inline-flex items-center justify-center gap-[12px] rounded-[6px] font-['Funnel_Display:Medium',_sans-serif] font-medium transition-all duration-300 transform disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseClasses = "inline-flex items-center justify-center gap-[12px] rounded-[6px] font-['Funnel_Display:Medium',_sans-serif] font-medium transition-all duration-300 transform disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer";
 
   const animationClasses = {
     scale: "hover:scale-105 active:scale-95",

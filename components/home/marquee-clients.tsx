@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { clientItems, ClientData } from "./clients-data";
+import { clientItems, ClientData } from "@/data";
 
 function ClientLogo({ client }: { client: ClientData }) {
   return (

@@ -34,7 +34,7 @@ export function PortfolioModal({ isOpen, onClose, item }: PortfolioModalProps) {
         {/* Close Button - Absolute Position */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-[#F5F5F5] hover:bg-[#E8E8E8] transition-colors flex items-center justify-center group"
+          className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-[#F5F5F5] hover:bg-[#E8E8E8] transition-colors flex items-center justify-center group cursor-pointer"
         >
           <X className="w-5 h-5 text-[#666] group-hover:text-[#333] transition-colors" />
         </button>

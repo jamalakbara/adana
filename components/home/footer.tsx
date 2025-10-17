@@ -1,22 +1,69 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Linkedin, Twitter, Instagram } from "lucide-react";
+import { ExternalLink } from "lucide-react";
+import { socialLinks, footerLinks, contactInfo, companyInfo } from "@/data";
+
+// Form validation schema
+const newsletterSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+});
+
+type NewsletterFormData = z.infer<typeof newsletterSchema>;
 
 export function Footer() {
-  const socialLinks = [
-    { name: "LinkedIn", icon: Linkedin, href: "#" },
-    { name: "TikTok", icon: "/placeholder-tiktok.svg", href: "#" },
-    { name: "Twitter", icon: Twitter, href: "#" },
-    { name: "Instagram", icon: Instagram, href: "#" }
-  ];
+  // Form state
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitMessage, setSubmitMessage] = useState('');
 
-  const footerLinks = {
-    services: ["Our Services", "About Us", "Portfolio", "Digital Partner"],
-    legal: ["Privacy Policy", "Terms of Service"]
+  // Form setup
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<NewsletterFormData>({
+    resolver: zodResolver(newsletterSchema),
+  });
+
+  // Form submission handler
+  const onSubmit = async (data: NewsletterFormData) => {
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+    setSubmitMessage('');
+
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitStatus('success');
+        setSubmitMessage(result.message);
+        reset(); // Clear the form
+      } else {
+        setSubmitStatus('error');
+        setSubmitMessage(result.message);
+      }
+    } catch {
+      setSubmitStatus('error');
+      setSubmitMessage('Failed to subscribe. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
-
+  
   return (
     <footer className="bg-[#fcfcf4]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -32,20 +79,44 @@ export function Footer() {
                 <p className="mb-[32px] font-['Public_Sans:Regular',_sans-serif] text-[14px] leading-[20px] text-[#646464]">
                   Lorem ipsum dolor sit amet consectetur. Maecenas lorem massa eleifend commodo convallis.
                 </p>
-                <div className="relative h-12">
-                  <input
-                    type="email"
-                    placeholder="Email address"
-                    className="absolute left-0 top-0 w-full h-12 rounded-none border-0 border-b border-[#dedacf] bg-[#fcfcf4] font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[#b1b1b1] placeholder-[#b1b1b1] focus:outline-none focus:ring-0 pt-[15px]"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-0 top-[13px] h-6 w-6 text-[#1e1e1e] hover:bg-transparent"
-                  >
-                    <ExternalLink className="h-4 w-4 rotate-45" />
-                  </Button>
-                </div>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                  <div className="relative h-12">
+                    <input
+                      type="email"
+                      placeholder="Email address"
+                      {...register('email')}
+                      disabled={isSubmitting}
+                      className={`absolute left-0 top-0 w-full h-12 rounded-none border-0 border-b ${
+                        errors.email
+                          ? 'border-red-500'
+                          : 'border-[#dedacf] focus:border-[#334e4d]'
+                      } bg-[#fcfcf4] font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[#1e1e1e] placeholder-[#b1b1b1] focus:outline-none focus:ring-0 pt-[15px] disabled:opacity-50 disabled:cursor-not-allowed`}
+                    />
+                    <Button
+                      type="submit"
+                      variant="ghost"
+                      size="icon"
+                      disabled={isSubmitting}
+                      className="absolute right-0 top-[13px] h-6 w-6 text-[#1e1e1e] hover:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isSubmitting ? (
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#1e1e1e] border-t-transparent" />
+                      ) : (
+                        <ExternalLink className="h-4 w-4 rotate-45" />
+                      )}
+                    </Button>
+                  </div>
+                  {errors.email && (
+                    <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+                  )}
+                  {submitStatus !== 'idle' && (
+                    <div className={`text-sm ${
+                      submitStatus === 'success' ? 'text-green-600' : 'text-red-500'
+                    }`}>
+                      {submitMessage}
+                    </div>
+                  )}
+                </form>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-[24px]">
@@ -55,17 +126,17 @@ export function Footer() {
                     {footerLinks.services.map((link, index) => (
                       <a
                         key={index}
-                        href="#"
+                        href={link.href}
                         className="hover:text-[#334e4d] transition-colors"
                       >
-                        {link}
+                        {link.name}
                       </a>
                     ))}
                   </div>
                 </div>
 
                 {/* Legal links */}
-                <div>
+                {/* <div>
                   <div className="flex flex-col gap-[18px] font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[#1e1e1e]">
                     {footerLinks.legal.map((link, index) => (
                       <a
@@ -77,7 +148,7 @@ export function Footer() {
                       </a>
                     ))}
                   </div>
-                </div>
+                </div> */}
 
                 {/* Contact info */}
                 <div>
@@ -87,7 +158,7 @@ export function Footer() {
                         Address
                       </div>
                       <div className="font-['Public_Sans:Regular',_sans-serif] text-[14px] leading-[20px] text-[#1e1e1e]">
-                        Jl. Pasir Luyu Hilir No.33, Pasirluyu, Kec. Regol, Kota Bandung, Jawa Barat 40254
+                        {contactInfo.address}
                       </div>
                     </div>
                     <div>
@@ -97,13 +168,13 @@ export function Footer() {
                       <div className="space-y-2 font-['Public_Sans:Regular',_sans-serif] text-[14px] leading-[24px] text-[#1e1e1e]">
                         <div className="flex items-center gap-2">
                           <span className="font-bold">P.</span>
-                          <a href="tel:+6281234567890" className="underline decoration-solid underline-offset-auto hover:text-[#334e4d] transition-colors">
-                            +62 812 3456 7890
+                          <a href={contactInfo.phoneUrl} className="underline decoration-solid underline-offset-auto hover:text-[#334e4d] transition-colors">
+                            {contactInfo.phone}
                           </a>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="font-bold">E.</span>
-                          <a href="mailto:contact@adana.com" className="underline decoration-solid underline-offset-auto hover:text-[#334e4d] transition-colors">
+                          <a href={contactInfo.emailUrl} className="underline decoration-solid underline-offset-auto hover:text-[#334e4d] transition-colors">
                             contact@adana.com
                           </a>
                         </div>
@@ -123,11 +194,18 @@ export function Footer() {
                     <a
                       key={index}
                       href={social.href}
-                      className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#fcfcf4] border border-[#dedacf] transition-all hover:bg-[#f1ff66]"
+                      className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#D1CEC4] border border-[#dedacf] transition-all hover:bg-[#334E4D]"
                       aria-label={social.name}
                     >
                       {typeof social.icon === 'string' ? (
-                        <div className="h-4 w-4 bg-[#1e1e1e]/50 rounded" />
+                        <img
+                          src={social.icon}
+                          alt={social.name}
+                          className="h-4 w-4 object-contain opacity-70 group-hover:opacity-100 transition-all duration-300"
+                          style={{
+                            filter: 'grayscale(1) brightness(0) invert(1)'
+                          }}
+                        />
                       ) : (
                         <social.icon className="h-4 w-4 text-[#1e1e1e]" />
                       )}
@@ -139,7 +217,7 @@ export function Footer() {
               {/* Mobile Copyright */}
               <div className="text-left">
                 <p className="font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[rgba(30,30,30,0.5)]">
-                  © 2025 Adana Digital. All Right Reserved
+                  {companyInfo.copyright}
                 </p>
               </div>
             </div>
@@ -156,20 +234,44 @@ export function Footer() {
                 <p className="mb-6 font-['Public_Sans:Regular',_sans-serif] text-[14px] leading-[20px] text-[#646464]">
                   Lorem ipsum dolor sit amet consectetur. Maecenas lorem massa eleifend commodo convallis. Pellentesque quis aliquet auctor
                 </p>
-                <div className="relative h-12 w-[432px]">
-                  <input
-                    type="email"
-                    placeholder="Email address"
-                    className="absolute left-0 top-0 w-[432px] h-12 rounded-none border-0 border-b border-[#dedacf] bg-[#fcfcf4] font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[#b1b1b1] placeholder-[#b1b1b1] focus:outline-none focus:ring-0 pt-[15px]"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-0 top-[13px] h-6 w-6 text-[#1e1e1e] hover:bg-transparent"
-                  >
-                    <ExternalLink className="h-4 w-4 rotate-45" />
-                  </Button>
-                </div>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                  <div className="relative h-12 w-[432px]">
+                    <input
+                      type="email"
+                      placeholder="Email address"
+                      {...register('email')}
+                      disabled={isSubmitting}
+                      className={`absolute left-0 top-0 w-[432px] h-12 rounded-none border-0 border-b ${
+                        errors.email
+                          ? 'border-red-500'
+                          : 'border-[#dedacf] focus:border-[#334e4d]'
+                      } bg-[#fcfcf4] font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[#1e1e1e] placeholder-[#b1b1b1] focus:outline-none focus:ring-0 pt-[15px] disabled:opacity-50 disabled:cursor-not-allowed`}
+                    />
+                    <Button
+                      type="submit"
+                      variant="ghost"
+                      size="icon"
+                      disabled={isSubmitting}
+                      className="absolute right-0 top-[13px] h-6 w-6 text-[#1e1e1e] hover:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isSubmitting ? (
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#1e1e1e] border-t-transparent" />
+                      ) : (
+                        <ExternalLink className="h-4 w-4 rotate-45" />
+                      )}
+                    </Button>
+                  </div>
+                  {errors.email && (
+                    <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+                  )}
+                  {submitStatus !== 'idle' && (
+                    <div className={`text-sm ${
+                      submitStatus === 'success' ? 'text-green-600' : 'text-red-500'
+                    }`}>
+                      {submitMessage}
+                    </div>
+                  )}
+                </form>
               </div>
 
               {/* Center - Links */}
@@ -180,17 +282,17 @@ export function Footer() {
                     {footerLinks.services.map((link, index) => (
                       <a
                         key={index}
-                        href="#"
+                        href={link.href}
                         className="hover:text-[#334e4d] transition-colors"
                       >
-                        {link}
+                        {link.name}
                       </a>
                     ))}
                   </div>
                 </div>
 
                 {/* Legal links */}
-                <div>
+                {/* <div>
                   <div className="flex flex-col gap-[18px] font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[#1e1e1e]">
                     {footerLinks.legal.map((link, index) => (
                       <a
@@ -202,7 +304,7 @@ export function Footer() {
                       </a>
                     ))}
                   </div>
-                </div>
+                </div> */}
               </div>
 
               {/* Right side - Contact */}
@@ -213,7 +315,7 @@ export function Footer() {
                       Address
                     </div>
                     <div className="font-['Public_Sans:Regular',_sans-serif] text-[14px] leading-[20px] text-[#1e1e1e]">
-                      Jl. Pasir Luyu Hilir No.33, Pasirluyu, Kec. Regol, Kota Bandung, Jawa Barat 40254
+                      {contactInfo.address}
                     </div>
                   </div>
                   <div>
@@ -223,13 +325,13 @@ export function Footer() {
                     <div className="space-y-2 font-['Public_Sans:Regular',_sans-serif] text-[14px] leading-[24px] text-[#1e1e1e]">
                       <div className="flex items-center gap-2">
                         <span className="font-bold">P.</span>
-                        <a href="tel:+6281234567890" className="underline decoration-solid underline-offset-auto hover:text-[#334e4d] transition-colors">
-                          +62 812 3456 7890
+                        <a href={contactInfo.phoneUrl} className="underline decoration-solid underline-offset-auto hover:text-[#334e4d] transition-colors">
+                          {contactInfo.phone}
                         </a>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold">E.</span>
-                        <a href="mailto:contact@adana.com" className="underline decoration-solid underline-offset-auto hover:text-[#334e4d] transition-colors">
+                        <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" className="underline decoration-solid underline-offset-auto hover:text-[#334e4d] transition-colors">
                           contact@adana.com
                         </a>
                       </div>
@@ -253,11 +355,18 @@ export function Footer() {
                     <a
                       key={index}
                       href={social.href}
-                      className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#fcfcf4] border border-[#dedacf] transition-all hover:bg-[#f1ff66]"
+                      className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#D1CEC4] border border-[#dedacf] transition-all hover:bg-[#334E4D]"
                       aria-label={social.name}
                     >
                       {typeof social.icon === 'string' ? (
-                        <div className="h-4 w-4 bg-[#1e1e1e]/50 rounded" />
+                        <img
+                          src={social.icon}
+                          alt={social.name}
+                          className="h-4 w-4 object-contain opacity-70 group-hover:opacity-100 transition-all duration-300"
+                          style={{
+                            filter: 'grayscale(1) brightness(0) invert(1)'
+                          }}
+                        />
                       ) : (
                         <social.icon className="h-4 w-4 text-[#1e1e1e]" />
                       )}
@@ -269,7 +378,7 @@ export function Footer() {
               {/* Copyright */}
               <div>
                 <p className="font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[rgba(30,30,30,0.5)]">
-                  © 2025 Adana Digital. All Right Reserved
+                  {companyInfo.copyright}
                 </p>
               </div>
             </div>

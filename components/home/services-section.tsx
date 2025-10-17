@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { SectionContainer } from "@/components/ui/section-container";
 import { Typography } from "@/components/ui/typography";
 import { ServiceExpansionItem } from "@/components/ui/service-expansion-item";
-import { servicesData } from "./services-data";
+import { servicesData } from "@/data";
 
 export function ServicesSection() {
   const [expandedService, setExpandedService] = useState<string | null>(servicesData[0]?.id || null);

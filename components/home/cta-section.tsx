@@ -109,7 +109,7 @@ export function CtaSection() {
               <AnimatedButton
                 variant="ghost"
                 hasArrow={true}
-                className="bg-transparent"
+                className="bg-transparent hover:bg-transparent"
                 style={{
                   animation: isVisible ? 'bounceIn 0.6s ease-out 1.2s both' : 'none'
                 }}

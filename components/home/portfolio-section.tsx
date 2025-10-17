@@ -5,41 +5,7 @@ import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { Typography } from "@/components/ui/typography";
 import { PortfolioModal } from "./portfolio-modal";
-
-const portfolioItems = [
-  {
-    id: 1,
-    category: "Performance Marketing",
-    client: "Cloxvox",
-    description: "During their launch in Indonesia, world maximize their visibility and acquisition using performance media strategy on Meta, Tiktok, and Google Ads.",
-    bgColor: "bg-[#334e4d]",
-    textColor: "text-[#1e1e1e]",
-    borderColor: "border-[#dedacf]",
-    logo: "/logo-portofolio-1.png",
-    backgroundImage: "/portfolio-1.png",
-  },
-  {
-    id: 2,
-    category: "Performance Marketing",
-    client: "World ID",
-    description: "During their launch in Indonesia, world maximize their visibility and acquisition using performance media strategy on Meta, Tiktok, and Google Ads.",
-    bgColor: "bg-[#334e4d]",
-    textColor: "text-white",
-    borderColor: "border-[#dedacf]",
-    logo: "/logo-portofolio-2.png",
-    backgroundImage: "/portfolio-1.png",
-  },
-  {
-    id: 3,
-    category: "Digital Media Buying",
-    client: "Telkomsel",
-    description: "During their launch in Indonesia, world maximize their visibility and acquisition using performance media strategy on Meta, Tiktok, and Google Ads.",
-    bgColor: "bg-[#334e4d]",
-    textColor: "text-white",
-    logo: "/logo-portofolio-3.png",
-    backgroundImage: "/portfolio-1.png",
-  },
-];
+import { portfolioItems } from "@/data";
 
 // Helper function to truncate text after a certain number of words
 const truncateWords = (text: string, maxWords: number) => {
@@ -125,7 +91,6 @@ export function PortfolioSection() {
             <div
               className={`
                 ${selectedItem.bgColor}
-                ${selectedItem.borderColor ? 'border' : ''}
                 rounded-[24px]
                 overflow-hidden
                 transition-all duration-500
@@ -175,7 +140,6 @@ export function PortfolioSection() {
               className={`
                 hidden lg:block
                 ${selectedItem.bgColor}
-                ${selectedItem.borderColor ? 'border' : ''}
                 rounded-[24px]
                 overflow-hidden
                 transition-all duration-500
@@ -359,7 +323,7 @@ export function PortfolioSection() {
 
               <button
                 onClick={prevSlide}
-                className="w-11 h-11 rounded-[12px] bg-[#eceae4] hover:bg-[#f1ff66] active:bg-[#f1ff66] transition-colors flex items-center justify-center group"
+                className="w-11 h-11 rounded-[12px] bg-[#eceae4] hover:bg-[#f1ff66] active:bg-[#f1ff66] transition-colors flex items-center justify-center group cursor-pointer"
                 aria-label="Previous portfolio item"
               >
                 <ChevronRight className="w-6 h-6 rotate-180 text-[#1e1e1e] group-hover:scale-110 transition-transform" />
@@ -367,7 +331,7 @@ export function PortfolioSection() {
 
               <button
                 onClick={nextSlide}
-                className="w-11 h-11 rounded-[12px] bg-[#eceae4] hover:bg-[#f1ff66] active:bg-[#f1ff66] transition-colors flex items-center justify-center group"
+                className="w-11 h-11 rounded-[12px] bg-[#eceae4] hover:bg-[#f1ff66] active:bg-[#f1ff66] transition-colors flex items-center justify-center group cursor-pointer"
                 aria-label="Next portfolio item"
               >
                 <ChevronRight className="w-6 h-6 text-[#1e1e1e] group-hover:scale-110 transition-transform" />

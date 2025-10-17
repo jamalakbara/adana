@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { SectionContainer } from "@/components/ui/section-container";
 import { Typography } from "@/components/ui/typography";
-import { partnersData } from "./partners-data";
+import { partnersData } from "@/data";
 
 
 
@@ -37,7 +37,7 @@ interface PartnerCardProps {
 function PartnerCard({ imageSrc, alt, index = 0 }: PartnerCardProps & { index?: number }) {
   return (
     <div
-      className="bg-[#FCFCF4] h-[60px] sm:h-[70px] md:h-[90px] w-[120px] sm:w-[140px] md:w-[204px] rounded-lg flex items-center justify-center transition-all duration-500 hover:shadow-lg hover:scale-105 hover:bg-white animate-fadeInUp flex-shrink-0"
+      className="bg-[#FCFCF4] h-[60px] sm:h-[70px] md:h-[90px] w-[120px] sm:w-[140px] md:w-[204px] rounded-lg flex items-center justify-center transition-all duration-500 animate-fadeInUp flex-shrink-0"
       style={{
         animationDelay: `${index * 0.1}s`
       }}
@@ -47,7 +47,7 @@ function PartnerCard({ imageSrc, alt, index = 0 }: PartnerCardProps & { index?: 
         alt={alt}
         width={152}
         height={40}
-        className="max-h-[30px] sm:max-h-[35px] md:max-h-[40px] max-w-[100px] sm:max-w-[120px] md:max-w-[152px] object-contain transition-transform duration-300 hover:scale-110"
+        className="max-h-[30px] sm:max-h-[35px] md:max-h-[40px] max-w-[100px] sm:max-w-[120px] md:max-w-[152px] object-contain"
       />
     </div>
   );
