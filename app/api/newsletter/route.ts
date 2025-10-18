@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import mailchimp from '@mailchimp/mailchimp_marketing';
+
+// Configure Mailchimp
+mailchimp.setConfig({
+  apiKey: process.env.MAILCHIMP_API_KEY,
+  server: process.env.MAILCHIMP_API_KEY?.split('-')[1],
+});
 
 // Request validation schema
 const subscribeSchema = z.object({
@@ -36,18 +43,64 @@ export async function POST(request: NextRequest) {
 
     const { email } = validation.data;
 
-    // Log the subscription for now (could also save to a file or database later)
+    // Log the subscription
     console.log('Newsletter subscription request:', email);
 
-    // TODO: Add email to local storage, database, or external service
-    // For now, we'll just return a success message
+    try {
+      // Add subscriber to Mailchimp
+      const audienceId = process.env.MAILCHIMP_AUDIENCE_ID;
 
-    const successResponse: SuccessResponse = {
-      success: true,
-      message: 'Thank you for subscribing! We\'ll keep you updated with our latest news and insights.',
-    };
+      if (!audienceId) {
+        throw new Error('Mailchimp audience ID not configured');
+      }
 
-    return NextResponse.json(successResponse, { status: 200 });
+      const response = await mailchimp.lists.addListMember(audienceId, {
+        email_address: email,
+        status: 'subscribed',
+      });
+
+      // Type the response properly and safely access the id
+      const mailchimpId = (response as any)?.id || 'unknown';
+      console.log('Successfully subscribed to Mailchimp:', mailchimpId);
+
+      const successResponse: SuccessResponse = {
+        success: true,
+        message: 'Thank you for subscribing! You\'ve been added to our newsletter.',
+        mailchimpId: mailchimpId,
+      };
+
+      return NextResponse.json(successResponse, { status: 200 });
+
+    } catch (mailchimpError: any) {
+      console.error('Mailchimp subscription error:', mailchimpError);
+
+      // Handle specific Mailchimp errors
+      let errorMessage = 'An unexpected error occurred. Please try again.';
+      let statusCode = 500;
+
+      if (mailchimpError.response?.status === 400) {
+        const errorDetail = mailchimpError.response.body.detail;
+
+        if (errorDetail?.includes('already a list member')) {
+          errorMessage = 'This email is already subscribed to our newsletter.';
+          statusCode = 409; // Conflict
+        } else if (errorDetail?.includes('looks fake or invalid')) {
+          errorMessage = 'Please enter a valid email address.';
+          statusCode = 400; // Bad request
+        } else {
+          errorMessage = errorDetail || 'Invalid email address.';
+          statusCode = 400;
+        }
+      }
+
+      const errorResponse: ErrorResponse = {
+        success: false,
+        message: errorMessage,
+        error: mailchimpError.message,
+      };
+
+      return NextResponse.json(errorResponse, { status: statusCode });
+    }
   } catch (error) {
     console.error('Newsletter subscription error:', error);
 
@@ -66,6 +119,7 @@ export async function GET() {
   return NextResponse.json({
     success: true,
     message: 'Newsletter API is healthy and ready',
-    service: 'Local storage (no external dependencies)',
+    service: 'Mailchimp integration',
+    configured: !!(process.env.MAILCHIMP_API_KEY && process.env.MAILCHIMP_AUDIENCE_ID),
   });
 }
