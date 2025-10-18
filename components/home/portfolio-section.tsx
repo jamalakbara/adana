@@ -6,6 +6,56 @@ import Image from "next/image";
 import { Typography } from "@/components/ui/typography";
 import { PortfolioModal } from "./portfolio-modal";
 import { portfolioItems } from "@/data";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
+
+// Animation variants
+const headerVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+      delay: 0.2
+    }
+  }
+};
+
+const largeCardVariants = {
+  hidden: { opacity: 0, scale: 0.95, y: 30 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      duration: 0.8,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+      delay: 0.4
+    }
+  }
+};
+
+const smallCardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.25, 0.46, 0.45, 0.94] as const
+    }
+  },
+  exit: {
+    opacity: 0,
+    y: -20,
+    transition: {
+      duration: 0.3,
+      ease: [0.25, 0.46, 0.45, 0.94] as const
+    }
+  }
+};
 
 // Helper function to truncate text after a certain number of words
 const truncateWords = (text: string, maxWords: number) => {
@@ -18,6 +68,10 @@ export function PortfolioSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedModalItem, setSelectedModalItem] = useState<typeof portfolioItems[0] | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
 
   const itemsPerPage = 4; // Show 4 small cards (2x2 grid)
   const maxVisibleItems = 5; // Maximum recommended items before showing pagination
@@ -47,10 +101,21 @@ export function PortfolioSection() {
   // Modal functions
   const openModal = (item: typeof portfolioItems[0]) => {
     setSelectedModalItem(item);
+    setIsModalOpen(true);
+    setIsClosing(false);
   };
 
   const closeModal = () => {
-    setSelectedModalItem(null);
+    if (isClosing || !isModalOpen) return; // Prevent multiple close calls
+    setIsClosing(true);
+    setIsModalOpen(false); // This triggers the exit animation
+  };
+
+  const handleAnimationComplete = () => {
+    if (isClosing) {
+      setSelectedModalItem(null);
+      setIsClosing(false);
+    }
   };
 
   // Get other items for display
@@ -69,10 +134,15 @@ export function PortfolioSection() {
   }
 
   return (
-    <section id="portfolio" className="py-16 lg:py-24 bg-[#fcfcf4]">
+    <section ref={ref} id="portfolio" className="py-16 lg:py-24 bg-[#fcfcf4]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12 lg:mb-16">
+        <motion.div
+          className="text-center mb-12 lg:mb-16"
+          variants={headerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
           <Typography variant="section-label" className="mb-4">
             Our Portfolio
           </Typography>
@@ -81,12 +151,25 @@ export function PortfolioSection() {
             <br className="hidden sm:block" />
             A Showcase of What We Do Best
           </Typography>
-        </div>
+        </motion.div>
 
         {/* Portfolio Layout */}
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-12 items-start">
           {/* Large Selected Card - Left Side */}
-          <div className="flex-shrink-0 w-full lg:w-[660px]">
+          <motion.div
+            className="flex-shrink-0 w-full lg:w-[660px]"
+            variants={largeCardVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            whileInView={{ scale: 1 }}
+            transition={{
+              type: "spring",
+              stiffness: 400,
+              damping: 17,
+              duration: 0.1
+            }}
+            layoutId="selectedCard"
+          >
             {/* Mobile/Tablet Card - Shows bgColor only */}
             <div
               className={`
@@ -211,33 +294,41 @@ export function PortfolioSection() {
               </div>
 
             </div>
-        </div>
+          </motion.div>
 
           {/* Right Side - Half-Sectioned Cards */}
           <div className="w-full lg:w-auto lg:flex-1" style={{ height: '342px' }}>
             <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 lg:gap-6 h-full">
-              {otherItems.length > 0 ? (
-                otherItems.map((item) => {
-                  const itemGlobalIndex = portfolioItems.findIndex(p => p.id === item.id);
-                  const isSelected = itemGlobalIndex === activeIndex;
-                  return (
-                    <div
-                      key={item.id}
-                      onClick={() => openModal(item)}
-                      className={`
-                        rounded-[16px] lg:rounded-[24px]
-                        border border-[#DEDACF]
-                        ${isSelected ? 'bg-[#334E4D]' : 'bg-[#FCFCF4]'}
-                        overflow-hidden
-                        transition-all duration-300
-                        ${!isSelected ? 'hover:bg-[#334E4D] hover:shadow-lg' : 'shadow-lg'}
-                        cursor-pointer
-                        relative
-                        group
-                        w-full
-                        h-full
-                      `}
-                    >
+                {otherItems.length > 0 ? (
+                  otherItems.map((item, index) => {
+                    const itemGlobalIndex = portfolioItems.findIndex(p => p.id === item.id);
+                    const isSelected = itemGlobalIndex === activeIndex;
+                    return (
+                      <motion.div
+                        key={item.id}
+                        variants={isInView ? smallCardVariants : undefined}
+                        initial={isInView ? "hidden" : undefined}
+                        animate={isInView ? "visible" : { scale: isSelected ? 1.02 : 1 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 400,
+                          damping: 17,
+                          duration: 0.1
+                        }}
+                        onClick={() => openModal(item)}
+                        className={`
+                          rounded-[16px] lg:rounded-[24px]
+                          border border-[#DEDACF]
+                          ${isSelected ? 'bg-[#334E4D]' : 'bg-[#FCFCF4]'}
+                          overflow-hidden
+                          ${!isSelected ? 'hover:bg-[#334E4D] hover:shadow-lg' : 'shadow-lg'}
+                          cursor-pointer
+                          relative
+                          group
+                          w-full
+                          h-full
+                        `}
+                      >
                     {/* Logo */}
                     <div className="absolute top-3 lg:top-4 left-3 lg:left-4 z-10">
                       <div className="w-[60px] h-[12px] lg:w-[80px] lg:h-[14px] overflow-hidden">
@@ -295,7 +386,7 @@ export function PortfolioSection() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                   );
                 })
               ) : (
@@ -344,9 +435,11 @@ export function PortfolioSection() {
       {/* Portfolio Modal */}
       {selectedModalItem && (
         <PortfolioModal
-          isOpen={!!selectedModalItem}
+          isOpen={isModalOpen}
           onClose={closeModal}
           item={selectedModalItem}
+          onAnimationComplete={handleAnimationComplete}
+          isClosing={isClosing}
         />
       )}
     </section>

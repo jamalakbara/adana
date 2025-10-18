@@ -35,11 +35,14 @@ export function Navbar({ className }: NavbarProps) {
     <nav
       className={cn(
         "relative w-full h-[60px] sm:h-[70px] md:h-[80px] bg-[#fcfcf4] transition-all duration-300 z-50",
-        isScrolled ? "fixed top-0 left-0 right-0 shadow-lg bg-[#fcfcf4]/95 backdrop-blur-sm" : "",
+        isScrolled ? "fixed top-0 left-0 shadow-lg bg-[#fcfcf4]/95 backdrop-blur-sm" : "",
         className
       )}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+      <div className={cn(
+        "h-full",
+        isScrolled ? "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+      )}>
         <div className="flex items-center justify-between h-full">
           {/* Mobile layout */}
           <div className="md:hidden flex items-center justify-between w-full">

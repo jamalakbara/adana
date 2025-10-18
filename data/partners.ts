@@ -37,7 +37,7 @@ export const partnersData: PartnersData = {
   "Social Partner": [
     { src: "/Social Platform /Meta Logo .png", alt: "Social Partner 1" },
     { src: "/Social Platform /Tiktok Ads .png", alt: "Social Partner 2" },
-    { src: "/Social Platform /Google Ads Logo .svg", alt: "Social Partner 3" },
+    { src: "/Social Platform /Google Ads Logo .png", alt: "Social Partner 3" },
     { src: "/Social Platform /Linkedin Ads.png", alt: "Social Partner 4" }
   ]
 };

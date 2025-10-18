@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 import { socialLinks, footerLinks, contactInfo, companyInfo } from "@/data";
+import { motion, useInView } from "framer-motion";
 
 // Form validation schema
 const newsletterSchema = z.object({
@@ -15,11 +16,51 @@ const newsletterSchema = z.object({
 
 type NewsletterFormData = z.infer<typeof newsletterSchema>;
 
+// Animation variants
+const sectionVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.25, 0.46, 0.45, 0.94] as const
+    }
+  }
+};
+
+const staggeredContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+      ease: [0.25, 0.46, 0.45, 0.94] as const
+    }
+  }
+};
+
+const socialIconVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as const
+    }
+  }
+};
+
 export function Footer() {
   // Form state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [submitMessage, setSubmitMessage] = useState('');
+  const footerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(footerRef, { once: true, amount: 0.1 });
 
   // Form setup
   const {
@@ -65,14 +106,22 @@ export function Footer() {
   };
   
   return (
-    <footer className="bg-[#fcfcf4]">
+    <footer className="bg-[#fcfcf4]" ref={footerRef}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="py-16 px-4">
+        <motion.div
+          className="py-16 px-4"
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
           {/* Mobile layout - stacked */}
           <div className="lg:hidden">
             <div className="max-w-md mx-auto">
               {/* Newsletter section */}
-              <div className="mb-[50px]">
+              <motion.div
+                className="mb-[50px]"
+                variants={sectionVariants}
+                transition={{ delay: 0.1 }}
+              >
                 <h3 className="mb-[12px] font-['Public_Sans:Regular',_sans-serif] text-[24px] font-normal text-[#1e1e1e]">
                   Stay update with us
                 </h3>
@@ -117,9 +166,13 @@ export function Footer() {
                     </div>
                   )}
                 </form>
-              </div>
+              </motion.div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-[24px]">
+              <motion.div
+                className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-[24px]"
+                variants={sectionVariants}
+                transition={{ delay: 0.2 }}
+              >
                 {/* Services links */}
                 <div>
                   <div className="flex flex-col gap-[18px] font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[#1e1e1e]">
@@ -182,20 +235,28 @@ export function Footer() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Mobile Social links */}
-              <div className="flex items-center gap-[12px] mb-[42px]">
+              <motion.div
+                className="flex items-center gap-[12px] mb-[42px]"
+                variants={sectionVariants}
+                transition={{ delay: 0.3 }}
+              >
                 <span className="font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[#1e1e1e]">
                   Follow Us
                 </span>
-                <div className="flex gap-[2px]">
+                <motion.div
+                  className="flex gap-[2px]"
+                  variants={staggeredContainerVariants}
+                >
                   {socialLinks.map((social, index) => (
-                    <a
+                    <motion.a
                       key={index}
                       href={social.href}
                       className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#D1CEC4] border border-[#dedacf] transition-all hover:bg-[#334E4D]"
                       aria-label={social.name}
+                      variants={socialIconVariants}
                     >
                       {typeof social.icon === 'string' ? (
                         <img
@@ -209,25 +270,35 @@ export function Footer() {
                       ) : (
                         <social.icon className="h-4 w-4 text-[#1e1e1e]" />
                       )}
-                    </a>
+                    </motion.a>
                   ))}
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
 
               {/* Mobile Copyright */}
-              <div className="text-left">
+              <motion.div
+                className="text-left"
+                variants={sectionVariants}
+                transition={{ delay: 0.4 }}
+              >
                 <p className="font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[rgba(30,30,30,0.5)]">
                   {companyInfo.copyright}
                 </p>
-              </div>
+              </motion.div>
             </div>
           </div>
 
           {/* Desktop layout - horizontal */}
-          <div className="hidden lg:block">
+          <motion.div
+            className="hidden lg:block"
+            variants={staggeredContainerVariants}
+          >
             <div className="flex">
               {/* Left side - Newsletter */}
-              <div className="w-[432px] pr-12">
+              <motion.div
+                className="w-[432px] pr-12"
+                variants={sectionVariants}
+              >
                 <h3 className="mb-4 font-['Public_Sans:Regular',_sans-serif] text-[32px] font-normal text-[#1e1e1e]">
                   Stay update with us
                 </h3>
@@ -272,23 +343,31 @@ export function Footer() {
                     </div>
                   )}
                 </form>
-              </div>
+              </motion.div>
 
               {/* Center - Links */}
-              <div className="flex-1 flex justify-center gap-24">
+              <motion.div
+                className="flex-1 flex justify-center gap-24"
+                variants={sectionVariants}
+              >
                 {/* Services links */}
                 <div>
-                  <div className="flex flex-col gap-[18px] font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[#1e1e1e]">
+                  <motion.div
+                    className="flex flex-col gap-[18px] font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[#1e1e1e]"
+                    variants={staggeredContainerVariants}
+                  >
                     {footerLinks.services.map((link, index) => (
-                      <a
+                      <motion.a
                         key={index}
                         href={link.href}
                         className="hover:text-[#334e4d] transition-colors"
+                        variants={sectionVariants}
+                        transition={{ delay: index * 0.1 }}
                       >
                         {link.name}
-                      </a>
+                      </motion.a>
                     ))}
-                  </div>
+                  </motion.div>
                 </div>
 
                 {/* Legal links */}
@@ -305,10 +384,13 @@ export function Footer() {
                     ))}
                   </div>
                 </div> */}
-              </div>
+              </motion.div>
 
               {/* Right side - Contact */}
-              <div className="w-[318px] pl-12">
+              <motion.div
+                className="w-[318px] pl-12"
+                variants={sectionVariants}
+              >
                 <div className="space-y-6">
                   <div>
                     <div className="mb-2 font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[#b1b1b1]">
@@ -338,25 +420,33 @@ export function Footer() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Desktop Social links and Copyright */}
-          <div className="hidden lg:block mt-16">
+          <motion.div
+            className="hidden lg:block mt-16"
+            variants={sectionVariants}
+            transition={{ delay: 0.4 }}
+          >
             <div className="flex items-center justify-between">
               {/* Social links */}
               <div className="flex items-center gap-3">
                 <span className="font-['Public_Sans:Regular',_sans-serif] text-[14px] text-[#1e1e1e]">
                   Follow Us
                 </span>
-                <div className="flex gap-[2px]">
+                <motion.div
+                  className="flex gap-[2px]"
+                  variants={staggeredContainerVariants}
+                >
                   {socialLinks.map((social, index) => (
-                    <a
+                    <motion.a
                       key={index}
                       href={social.href}
                       className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#D1CEC4] border border-[#dedacf] transition-all hover:bg-[#334E4D]"
                       aria-label={social.name}
+                      variants={socialIconVariants}
                     >
                       {typeof social.icon === 'string' ? (
                         <img
@@ -370,9 +460,9 @@ export function Footer() {
                       ) : (
                         <social.icon className="h-4 w-4 text-[#1e1e1e]" />
                       )}
-                    </a>
+                    </motion.a>
                   ))}
-                </div>
+                </motion.div>
               </div>
 
               {/* Copyright */}
@@ -382,8 +472,8 @@ export function Footer() {
                 </p>
               </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </footer>
   );
