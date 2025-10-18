@@ -1,47 +1,91 @@
 "use client";
 
 import React from "react";
-import { useSection } from "@/components/content/providers/ContentProvider";
-import { SectionContainer, Typography } from "@/components/ui";
+import Image from "next/image";
+import { clientItems, ClientData } from "@/data";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
+
+// Animation variants
+const sectionVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.8,
+      ease: [0.25, 0.46, 0.45, 0.94] as const
+    }
+  }
+};
+
+const logoVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.25, 0.46, 0.45, 0.94] as const
+    }
+  }
+};
+
+function ClientLogo({ client, index }: { client: ClientData; index?: number }) {
+  return (
+    <motion.div
+      className="flex-shrink-0 transition-all duration-300 hover:scale-110 hover:brightness-125 hover:drop-shadow-lg"
+      style={{ height: `${client.height}px`, width: `${client.width}px` }}
+      variants={logoVariants}
+      initial="hidden"
+      animate="visible"
+      transition={{
+        duration: 0.6,
+        delay: (index || 0) * 0.1,
+        ease: [0.25, 0.46, 0.45, 0.94] as const
+      }}
+    >
+      <div className="h-full w-full overflow-hidden">
+        <Image
+          src={client.src}
+          alt={client.alt}
+          width={client.width}
+          height={client.height}
+          className="h-full w-full object-contain filter grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+        />
+      </div>
+    </motion.div>
+  );
+}
 
 export function MarqueeClients() {
-  const { data: marqueeContent, isLoaded } = useSection("marquee-clients");
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
 
-  // Default client logos for fallback
-  const defaultClientLogos = [
-    "https://s3-alpha-sig.figma.com/img/a28f/d673/96bd52d02dc33b9ee5181168e77c187f?Expires=1759708800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=XrMad9N7jR24fT8Ulm1uSYgiZfY~Qsi19haMhrfGhyM5vJLNxhLFs98FbGjdVYAgEKrXpApeRU29XqLBIRuhT3sr3PwkCXjaVoTBEfFIpPjMH0-Y1U0yw5Ke-F1JcBxSWhnu1UZzukb4C0-SgJllQ3TYfvf0dZJdDLNHyvtbS2O4HdxzL0dyqBkdT9mGOz1GQHYOyNSUUCP~OVuhF2n84ptLyMclH~ZNYhxvP6gZRZ6TGlp5XH7g58DbPj4iylVgGkTQVmyadF4uePnS5rDi0OSoRocHLzGCfOEapC0kc6boZ-mr3IrK6SiGQwu9JyuEY-GWWs~V5oXL9PM5SJYHAw__",
-    "https://s3-alpha-sig.figma.com/img/081c/e03a/aa75cffbd9531da99a8a8f09708c4489?Expires=1759708800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=aQLk48BkjUtKDSfJBAWJEVvOIrBOk-N6LDp3I-nbAejm~GI04Ye7mFPrFnNmvRMVFyVi6rDgq3r5yUbDIUl3GNjyuDi4FptOgTrg4o~duuAKSKgrTXLsduMxwtTcZdTyjmeP49FxZu626mo3gSmEZn-TqmaTGX88rPQyuVdFIPJmBw~db4nB0KsaBBk4U2DOg~qaQCTgjd2PPUyRdR8g6iJs8RoZ1jsowNgbtgxFolmmor~fToKTRq~xeuE0cz3wDP4aEbdSRcfKqA2MD3Jrjo3z2JaVW9Py8STq7-0baujWYB~B5ks-yyzBS~Alv5Cn0JCOAY4IguJWps~95r7rxw__",
-    "https://s3-alpha-sig.figma.com/img/b037/f877/2360865ce4c94883b2a979bfe30a5016?Expires=1759708800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=dXiqVPrebwLqgA-dPkvyfaYVuHShI46udFGOZYwio4lpKws5pPukdfuiJyZGpYKiGldiWt9XWdnbEUEUioAouImRF7nfsDGVZRpUjB1swbsE-uwUawPGMqGc7aZjOI4n~uwgfnAfvj-DCSHmTFrUUPlbOEBxOzOKSPE~Lf3sp-HQeopWuEA19UaofZXorCVYVth10tk0TKCl-vP0yPoeiSDyO0yCYVV08uoP8hD7nirh81ed22Z7rZxEFv3PnfCOIcQYPViFe4aCchKdJ40ZjdiqqwdoyCviHHDI4eRTAyYm8hiPp8zeYBugDjobWX0HyqMVzbVoX7WCStE3v0st6A__",
-    "https://s3-alpha-sig.figma.com/img/c58f/8a3d/e44993a94abfd76440ef2235e2cdad76?Expires=1759708800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=hVSVGjh3KqR5sYlcI-IPnYnnnxYwXwvUoDTEskGsVxr2ncE8BezC~F0rcA-tAq-2hcvvN90XqnhTidWTqoA9IE6WxnMLN~oYi5zFBCYN3UWvJ~aF8MraX7GZEIGurtzl7i09sQO2ryderBi9XwjyvnfkdAIxKlxMJRkjfgYaFyWK7BYsm9Q2PrWvhAipOGvX7zuC1gYdPwQz64XjqpFcuyd9Akk9nV3kQCRJAfS4dfFAPUtvn5tu6ph7k3xT2hB6usXpg4Xf6wBSaHiPvkjN97f1rPTJ1nPRwPc2h2DhhBqQCyeP~Dtu739zS54Z2iQdFAPftig2UHcKZa2247czYw__",
-    "https://s3-alpha-sig.figma.com/img/5dad/7827/d5657238aaf72ddf092b55d4e6727aa5?Expires=1759708800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=XhsJvAgdyhsSnqgx0mKMXklisNNx5Gh3SOBt3qBVrzr~bNsW-lrPQXo9TqQXYpwapEWaoq3bDDjiNY6lHLMMMS8nTbelrEEgKq7yduADtE95DXzg~B7SrZQlqKcCdJjwKgewSlA3s1FwoevkR4-M8Rmb1eMqluMViRbbWmfEcACUl2NQZYGiE3GOOP7n7lgyXvsG3ci6r1SWOsDuaqD8jRMKaoD1vAqOiM0J7Fn-zyRZqBDrYX4SgqmTGRQNZWGVqU8QNWJAQJ9W7rIAE05RR8FC7jlIcT1om~WynTNsepiySFhGa5AUyTOUlVAHjqivONvKsHc7FAXfrjKwSZBlgA__",
-  ];
-
-  // Get client logos from CMS or use defaults
-  const cmsClientLogos = isLoaded && marqueeContent?.clients && marqueeContent.clients.length > 0
-    ? marqueeContent.clients.map(client => client.logo?.url || client.logo?.supabase_url).filter(Boolean)
-    : [];
-
-  // Use CMS logos if available, otherwise use defaults
-  const clientLogos = cmsClientLogos.length > 0 ? cmsClientLogos : defaultClientLogos;
   return (
-    <section id="marquee-clients" className="relative bg-[#334e4d] h-[160px] overflow-hidden">
+    <motion.section
+      ref={ref}
+      id="marquee-clients"
+      className="relative bg-[#334e4d] h-[160px] overflow-hidden"
+      variants={sectionVariants}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+    >
       {/* Marquee content */}
       <div className="absolute h-[40px] top-[59px] overflow-hidden w-full">
         <div className="flex gap-[64px] items-center animate-marquee whitespace-nowrap group hover:animate-marquee-pause">
-      {/* Generate client logos dynamically with multiple sets for seamless loop */}
-          {[...clientLogos, ...clientLogos, ...clientLogos].map((logoUrl, index) => (
-            <div
-              key={`client-${index}`}
-              className="h-[27px] w-[135px] flex-shrink-0 transition-all duration-300 hover:scale-110 hover:brightness-125 hover:drop-shadow-lg"
-            >
-              <div className="h-full w-full overflow-hidden">
-                <img
-                  src={logoUrl}
-                  alt="Client logo"
-                  className="h-full w-full object-contain filter grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
-                />
-              </div>
-            </div>
+          {/* First set of client logos */}
+          {clientItems.map((client, index) => (
+            <ClientLogo key={`first-${client.id}`} client={client} index={index} />
+          ))}
+
+          {/* Second set of client logos for seamless loop */}
+          {clientItems.map((client, index) => (
+            <ClientLogo key={`second-${client.id}`} client={client} index={index + clientItems.length} />
+          ))}
+
+          {/* Third set of client logos for extra smoothness */}
+          {clientItems.map((client, index) => (
+            <ClientLogo key={`third-${client.id}`} client={client} index={index + (clientItems.length * 2)} />
           ))}
         </div>
       </div>
@@ -51,6 +95,6 @@ export function MarqueeClients() {
 
       {/* Right gradient fade */}
       <div className="absolute right-0 top-0 h-full w-[160px] bg-gradient-to-l from-[#334e4d] to-[rgba(51,78,77,0)] pointer-events-none z-10"></div>
-    </section>
+    </motion.section>
   );
 }

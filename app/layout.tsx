@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Parkinsans } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ContentProvider } from "@/components/content/providers/ContentProvider";
-import { fallbackContent } from "@/lib/cms/fallback-content";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,15 +13,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const parkinsans = Parkinsans({
-  variable: "--font-parkinsans",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
   title: "Adana Digital Agency",
   description:
-    "A modern Next.js starter with TypeScript, TailwindCSS, shadcn/ui, Better Auth, and Drizzle ORM",
+    "A modern digital agency focused on performance marketing and media solutions",
   icons: {
     icon: "/favicon.ico",
   },
@@ -37,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${parkinsans.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"
@@ -45,12 +38,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ContentProvider
-            fallbackContent={fallbackContent}
-            enableCache={false} // Temporarily disable cache to refresh content
-          >
-            {children}
-          </ContentProvider>
+          {children}
         </ThemeProvider>
       </body>
     </html>
