@@ -17,6 +17,7 @@ interface ServiceExpansionItemProps {
   ctaHref?: string;
   isExternal?: boolean;
   imagePosition?: "right" | "left";
+  onCTAClick?: () => void;
 }
 
 export function ServiceExpansionItem({
@@ -31,7 +32,8 @@ export function ServiceExpansionItem({
   ctaText = "Let's Discuss",
   ctaHref = "/contact",
   isExternal = false,
-  imagePosition = "right"
+  imagePosition = "right",
+  onCTAClick
 }: ServiceExpansionItemProps) {
   return (
     <div
@@ -77,7 +79,9 @@ export function ServiceExpansionItem({
                     className="w-fit"
                     onClick={(e) => {
                       e.stopPropagation(); // Prevent the parent onClick from triggering
-                      if (isExternal) {
+                      if (onCTAClick) {
+                        onCTAClick();
+                      } else if (isExternal) {
                         window.open(ctaHref, '_blank', 'noopener,noreferrer');
                       } else {
                         window.location.href = ctaHref;

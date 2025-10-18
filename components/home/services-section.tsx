@@ -119,6 +119,7 @@ export function ServicesSection() {
               showCTA={true}
               ctaText="Let's Discuss"
               imagePosition="right"
+              onCTAClick={() => window.open('https://wa.me/628112114142', '_blank', 'noopener,noreferrer')}
             />
           </motion.div>
         ))}

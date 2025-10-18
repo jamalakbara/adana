@@ -29,9 +29,8 @@ export interface CompanyInfo {
 }
 
 export const socialLinks: SocialLink[] = [
-  { name: "LinkedIn", icon: "/linkedin-logo.png", href: "#" },
-  { name: "Twitter", icon: "/twitter-logo.png", href: "#" },
-  { name: "Instagram", icon: "/instagram-logo.png", href: "#" }
+  { name: "LinkedIn", icon: "/linkedin-logo.png", href: "https://www.linkedin.com/company/adana-digital/" },
+  { name: "Instagram", icon: "/instagram-logo.png", href: "https://www.instagram.com/adanadigital/" }
 ];
 
 export const footerLinks: FooterLinks = {
@@ -49,10 +48,10 @@ export const footerLinks: FooterLinks = {
 
 export const contactInfo: ContactInfo = {
   address: "Jl. Pasir Luyu Hilir No.33, Pasirluyu, Kec. Regol, Kota Bandung, Jawa Barat 40254",
-  phone: "+62 812 3456 7890",
-  phoneUrl: "https://wa.me/6281234567890",
-  email: "contact@adana.com",
-  emailUrl: "mailto:contact@adana.com"
+  phone: "+62 811 2114 142",
+  phoneUrl: "https://wa.me/628112114142",
+  email: "contact@byadana.com",
+  emailUrl: "mailto:contact@byadana.com"
 };
 
 export const companyInfo: CompanyInfo = {

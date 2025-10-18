@@ -5,7 +5,7 @@ import { AnimatedButton } from "@/components/ui/animated-button";
 
 export function DiscussButton() {
   const handleWhatsAppClick = () => {
-    window.open('https://wa.me/6281321766565', '_blank');
+    window.open('https://wa.me/628112114142', '_blank');
   };
 
   return (

@@ -124,10 +124,10 @@ export function Footer() {
                 transition={{ delay: 0.1 }}
               >
                 <h3 className="mb-[12px] font-['Public_Sans:Regular',_sans-serif] text-[24px] font-normal text-[#1e1e1e]">
-                  Stay update with us
+                  Stay updated with us
                 </h3>
                 <p className="mb-[32px] font-['Public_Sans:Regular',_sans-serif] text-[14px] leading-[20px] text-[#646464]">
-                  Lorem ipsum dolor sit amet consectetur. Maecenas lorem massa eleifend commodo convallis.
+                  Subscribe to our newsletter for the latest insights, industry trends, and exclusive offers delivered straight to your inbox.
                 </p>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                   <div className="relative h-12">
@@ -181,7 +181,21 @@ export function Footer() {
                       <a
                         key={index}
                         href={link.href}
-                        className="hover:text-[#334e4d] transition-colors"
+                        className="hover:text-[#334e4d] transition-colors cursor-pointer"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const element = document.querySelector(link.href);
+                          if (element) {
+                            const navbarHeight = 80; // Account for sticky navbar height
+                            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                            const offsetPosition = elementPosition - navbarHeight;
+
+                            window.scrollTo({
+                              top: offsetPosition,
+                              behavior: 'smooth'
+                            });
+                          }
+                        }}
                       >
                         {link.name}
                       </a>
@@ -222,14 +236,14 @@ export function Footer() {
                       <div className="space-y-2 font-['Public_Sans:Regular',_sans-serif] text-[14px] leading-[24px] text-[#1e1e1e]">
                         <div className="flex items-center gap-2">
                           <span className="font-bold">P.</span>
-                          <a href={contactInfo.phoneUrl} className="underline decoration-solid underline-offset-auto hover:text-[#334e4d] transition-colors">
+                          <a href={contactInfo.phoneUrl} target="_blank" rel="noopener noreferrer" className="underline decoration-solid underline-offset-auto hover:text-[#334e4d] transition-colors">
                             {contactInfo.phone}
                           </a>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="font-bold">E.</span>
                           <a href={contactInfo.emailUrl} className="underline decoration-solid underline-offset-auto hover:text-[#334e4d] transition-colors">
-                            contact@adana.com
+                            {contactInfo.email}
                           </a>
                         </div>
                       </div>
@@ -255,6 +269,8 @@ export function Footer() {
                     <motion.a
                       key={index}
                       href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#D1CEC4] border border-[#dedacf] transition-all hover:bg-[#334E4D]"
                       aria-label={social.name}
                       variants={socialIconVariants}
@@ -303,10 +319,10 @@ export function Footer() {
                 variants={sectionVariants}
               >
                 <h3 className="mb-4 font-['Public_Sans:Regular',_sans-serif] text-[32px] font-normal text-[#1e1e1e]">
-                  Stay update with us
+                  Stay updated with us
                 </h3>
                 <p className="mb-6 font-['Public_Sans:Regular',_sans-serif] text-[14px] leading-[20px] text-[#646464]">
-                  Lorem ipsum dolor sit amet consectetur. Maecenas lorem massa eleifend commodo convallis. Pellentesque quis aliquet auctor
+                  Subscribe to our newsletter for the latest insights, industry trends, and exclusive offers delivered straight to your inbox.
                 </p>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                   <div className="relative h-12 w-[432px]">
@@ -363,9 +379,23 @@ export function Footer() {
                       <motion.a
                         key={index}
                         href={link.href}
-                        className="hover:text-[#334e4d] transition-colors"
+                        className="hover:text-[#334e4d] transition-colors cursor-pointer"
                         variants={sectionVariants}
                         transition={{ delay: index * 0.1 }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const element = document.querySelector(link.href);
+                          if (element) {
+                            const navbarHeight = 80; // Account for sticky navbar height
+                            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                            const offsetPosition = elementPosition - navbarHeight;
+
+                            window.scrollTo({
+                              top: offsetPosition,
+                              behavior: 'smooth'
+                            });
+                          }
+                        }}
                       >
                         {link.name}
                       </motion.a>
@@ -410,14 +440,14 @@ export function Footer() {
                     <div className="space-y-2 font-['Public_Sans:Regular',_sans-serif] text-[14px] leading-[24px] text-[#1e1e1e]">
                       <div className="flex items-center gap-2">
                         <span className="font-bold">P.</span>
-                        <a href={contactInfo.phoneUrl} className="underline decoration-solid underline-offset-auto hover:text-[#334e4d] transition-colors">
+                        <a href={contactInfo.phoneUrl} target="_blank" rel="noopener noreferrer" className="underline decoration-solid underline-offset-auto hover:text-[#334e4d] transition-colors">
                           {contactInfo.phone}
                         </a>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold">E.</span>
-                        <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" className="underline decoration-solid underline-offset-auto hover:text-[#334e4d] transition-colors">
-                          contact@adana.com
+                        <a href={contactInfo.emailUrl} className="underline decoration-solid underline-offset-auto hover:text-[#334e4d] transition-colors">
+                          {contactInfo.email}
                         </a>
                       </div>
                     </div>
@@ -447,6 +477,8 @@ export function Footer() {
                     <motion.a
                       key={index}
                       href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#D1CEC4] border border-[#dedacf] transition-all hover:bg-[#334E4D]"
                       aria-label={social.name}
                       variants={socialIconVariants}

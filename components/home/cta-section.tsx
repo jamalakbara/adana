@@ -137,6 +137,7 @@ export function CtaSection() {
                   variant="secondary"
                   hasArrow={true}
                   className="bg-[#1E1E1E]"
+                  onClick={() => window.open('https://wa.me/628112114142', '_blank')}
                 >
                   Free Consultation
                 </AnimatedButton>
@@ -147,6 +148,7 @@ export function CtaSection() {
                   variant="ghost"
                   hasArrow={true}
                   className="bg-transparent hover:bg-transparent"
+                  onClick={() => window.open('https://wa.me/628112114142', '_blank')}
                 >
                   Get 1 Month Free Service Charge
                 </AnimatedButton>

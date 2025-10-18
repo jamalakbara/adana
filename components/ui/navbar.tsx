@@ -172,7 +172,13 @@ export function Navbar({ className }: NavbarProps) {
                 initial="initial"
                 animate="animate"
                 whileHover="hover"
-                className="flex-shrink-0"
+                className="flex-shrink-0 cursor-pointer"
+                onClick={() => {
+                  window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                  });
+                }}
               >
                 <div className="h-[32px] sm:h-[36px] md:h-[39px] w-[90px] sm:w-[100px] md:w-[111px] relative">
                   <AdanaLogo className="absolute inset-0" />
@@ -188,7 +194,13 @@ export function Navbar({ className }: NavbarProps) {
             initial="initial"
             animate="animate"
             whileHover="hover"
-            className="hidden md:block flex-shrink-0"
+            className="hidden md:block flex-shrink-0 cursor-pointer"
+            onClick={() => {
+              window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+              });
+            }}
           >
             <div className="h-[32px] sm:h-[36px] md:h-[39px] w-[90px] sm:w-[100px] md:w-[111px] relative">
               <AdanaLogo className="absolute inset-0" />
