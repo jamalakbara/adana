@@ -121,7 +121,7 @@ export function AboutSection() {
             <motion.div
               variants={descriptionVariants}
               transition={{ delay: 1.0 }}
-              className="mt-[50px]"
+              className="mt-[24px] sm:mt-[50px]"
             >
               <Typography variant="section-description" style={{ width: "100%" }} className="space-y-4" nodeId="115:10871">
                 <p>
