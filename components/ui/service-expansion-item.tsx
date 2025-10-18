@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import { LazyImage } from "./lazy";
 import { AnimatedButton } from "./animated-button";
 
 interface ServiceExpansionItemProps {
@@ -77,8 +77,7 @@ export function ServiceExpansionItem({
                     variant="primary"
                     hasArrow={true}
                     className="w-fit"
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent the parent onClick from triggering
+                    onClick={() => {
                       if (onCTAClick) {
                         onCTAClick();
                       } else if (isExternal) {
@@ -98,13 +97,15 @@ export function ServiceExpansionItem({
 
         {/* Image Side */}
         {imageUrl && isExpanded && (
-          <div className="relative w-full sm:w-[300px] h-[300px] sm:h-auto sm:self-stretch overflow-hidden flex-shrink-0">
-            <Image
+          <div className="relative aspect-square w-72 sm:w-80 lg:w-96 max-w-[384px] overflow-hidden flex-shrink-0 mx-auto sm:mx-0 rounded-xl p-6 flex items-center justify-center">
+            <LazyImage
               src={imageUrl}
               alt={title}
-              width={300}
-              height={300}
-              className="w-full h-full object-cover"
+              width={384}
+              height={384}
+              className="flex items-center justify-center w-full h-full object-contain transition-transform duration-300 hover:scale-105"
+              skeletonVariant="card"
+              rootMargin="50px"
             />
           </div>
         )}

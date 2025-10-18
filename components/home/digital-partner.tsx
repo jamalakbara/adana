@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import Image from "next/image";
+import { LazyImage } from "@/components/ui/lazy";
 import { SectionContainer } from "@/components/ui/section-container";
 import { Typography } from "@/components/ui/typography";
 import { partnersData } from "@/data";
@@ -93,12 +93,14 @@ function PartnerCard({ imageSrc, alt }: PartnerCardProps) {
     <div
       className="bg-[#FCFCF4] h-[60px] sm:h-[70px] md:h-[90px] w-[120px] sm:w-[140px] md:w-[204px] rounded-lg flex items-center justify-center flex-shrink-0"
     >
-      <Image
+      <LazyImage
         src={imageSrc}
         alt={alt}
         width={152}
         height={40}
         className="max-h-[30px] sm:max-h-[35px] md:max-h-[40px] max-w-[100px] sm:max-w-[120px] md:max-w-[152px] object-contain"
+        skeletonVariant="avatar"
+        rootMargin="100px"
       />
     </div>
   );

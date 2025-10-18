@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import { LazyImage } from "@/components/ui/lazy";
 import { clientItems, ClientData } from "@/data";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
@@ -34,7 +34,6 @@ function ClientLogo({ client, index }: { client: ClientData; index?: number }) {
   return (
     <motion.div
       className="flex-shrink-0 transition-all duration-300 hover:scale-110 hover:brightness-125 hover:drop-shadow-lg"
-      style={{ height: `${client.height}px`, width: `${client.width}px` }}
       variants={logoVariants}
       initial="hidden"
       animate="visible"
@@ -45,12 +44,14 @@ function ClientLogo({ client, index }: { client: ClientData; index?: number }) {
       }}
     >
       <div className="h-full w-full overflow-hidden">
-        <Image
+        <LazyImage
           src={client.src}
           alt={client.alt}
           width={client.width}
           height={client.height}
           className="h-full w-full object-contain filter grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+          skeletonVariant="default"
+          priority={true}
         />
       </div>
     </motion.div>
@@ -71,7 +72,7 @@ export function MarqueeClients() {
       animate={isInView ? "visible" : "hidden"}
     >
       {/* Marquee content */}
-      <div className="absolute h-[40px] top-[59px] overflow-hidden w-full">
+      <div className="absolute top-[59px] overflow-hidden w-full">
         <div className="flex gap-[64px] items-center animate-marquee whitespace-nowrap group hover:animate-marquee-pause">
           {/* First set of client logos */}
           {clientItems.map((client, index) => (

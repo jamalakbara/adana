@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import { LazyImage } from "@/components/ui/lazy";
 import { SectionContainer } from "@/components/ui/section-container";
 import { Typography } from "@/components/ui/typography";
 import { motion, useInView } from "framer-motion";
@@ -82,13 +82,15 @@ export function AboutSection() {
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
           >
-            <Image
+            <LazyImage
               src="/about-image.png"
               alt="About us"
               width={546}
               height={546}
               className="w-full h-full object-cover"
               data-node-id="115:10868"
+              skeletonVariant="card"
+              priority={true}
             />
           </motion.div>
         </div>

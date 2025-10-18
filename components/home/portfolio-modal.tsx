@@ -3,6 +3,49 @@
 import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ImageSkeleton } from "@/components/ui/skeletons";
+
+// Simple modal image component with basic lazy loading
+function ModalImage({ src, alt }: { src: string; alt: string }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    // Reset state when src changes
+    setIsLoaded(false);
+    setHasError(false);
+  }, [src]);
+
+  return (
+    <div className="absolute inset-0 w-full h-full">
+      {/* Show skeleton while loading */}
+      {!isLoaded && !hasError && (
+        <div className="absolute inset-0 w-full h-full">
+          <ImageSkeleton
+            variant="banner"
+            width="100%"
+            height="100%"
+            className="w-full h-full"
+          />
+        </div>
+      )}
+      {/* Image */}
+      <img
+        src={src}
+        alt={alt}
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+          isLoaded ? 'opacity-100' : 'opacity-0'
+        }`}
+        style={{
+          objectFit: 'cover',
+          objectPosition: 'center'
+        }}
+        onLoad={() => setIsLoaded(true)}
+        onError={() => setHasError(true)}
+      />
+    </div>
+  );
+}
 
 // Hook to detect window size
 function useWindowSize() {
@@ -265,14 +308,9 @@ export function PortfolioModal({ isOpen, onClose, onAnimationComplete, isClosing
                 {/* Left Side - Image */}
                 <div className="lg:w-1/2 lg:h-full relative">
                   {item.backgroundImage ? (
-                    <div
-                      className="w-full h-full"
-                      style={{
-                        backgroundImage: `url(${item.backgroundImage})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
+                    <ModalImage
+                      src={item.backgroundImage}
+                      alt={item.client}
                     />
                   ) : (
                     <div className={`w-full h-full ${item.bgColor}`} />

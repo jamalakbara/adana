@@ -122,7 +122,7 @@ export function CtaSection() {
                 color: "#1E1E1E"
               }}
             >
-              Transform your business with our expert digital marketing strategies and data-driven solutions. Our team combines cutting-edge technology with proven methodologies to deliver measurable results that drive sustainable growth. From performance marketing to comprehensive digital campaigns, we're committed to helping you achieve your business objectives with maximum ROI and lasting impact.
+              Transform your business with our expert digital marketing strategies and data-driven solutions. Our team combines cutting-edge technology with proven methodologies to deliver measurable results that drive sustainable growth. From performance marketing to comprehensive digital campaigns, we&apos;re committed to helping you achieve your business objectives with maximum ROI and lasting impact.
             </Typography>
 
             {/* Benefits */}

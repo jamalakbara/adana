@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
-import Image from "next/image";
+import { LazyImage } from "@/components/ui/lazy";
 import { Typography } from "@/components/ui/typography";
 import { PortfolioModal } from "./portfolio-modal";
 import { portfolioItems } from "@/data";
@@ -187,12 +187,14 @@ export function PortfolioSection() {
               {/* Logo */}
               <div className="absolute top-8 left-6 z-10">
                 <div className="w-[130px] h-[21px] overflow-hidden">
-                  <Image
+                  <LazyImage
                     src={selectedItem.logo}
                     alt={selectedItem.client}
                     width={130}
                     height={21}
                     className="w-full h-full object-contain"
+                    skeletonVariant="default"
+                    priority={true}
                   />
                 </div>
               </div>
@@ -243,12 +245,14 @@ export function PortfolioSection() {
               {/* Logo */}
               <div className="absolute top-8 lg:top-12 left-6 lg:left-8 z-10">
                 <div className="w-[130px] h-[21px] lg:w-[270px] lg:h-[50px] overflow-hidden">
-                  <Image
+                  <LazyImage
                     src={selectedItem.logo}
                     alt={selectedItem.client}
                     width={270}
                     height={50}
                     className="w-full h-full object-contain"
+                    skeletonVariant="default"
+                    priority={true}
                   />
                 </div>
               </div>
@@ -332,12 +336,14 @@ export function PortfolioSection() {
                     {/* Logo */}
                     <div className="absolute top-3 lg:top-4 left-3 lg:left-4 z-10">
                       <div className="w-[60px] h-[12px] lg:w-[80px] lg:h-[14px] overflow-hidden">
-                        <Image
+                        <LazyImage
                           src={item.logo}
                           alt={item.client}
                           width={80}
                           height={14}
                           className="w-full h-full object-contain filter invert group-hover:invert-0"
+                          skeletonVariant="avatar"
+                          rootMargin="100px"
                         />
                       </div>
                     </div>

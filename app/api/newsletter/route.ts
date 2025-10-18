@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       });
 
       // Type the response properly and safely access the id
-      const mailchimpId = (response as any)?.id || 'unknown';
+      const mailchimpId = (response as { id?: string })?.id || 'unknown';
       console.log('Successfully subscribed to Mailchimp:', mailchimpId);
 
       const successResponse: SuccessResponse = {
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json(successResponse, { status: 200 });
 
-    } catch (mailchimpError: any) {
+    } catch (mailchimpError: Error | { response?: Response; status?: number }) {
       console.error('Mailchimp subscription error:', mailchimpError);
 
       // Handle specific Mailchimp errors
