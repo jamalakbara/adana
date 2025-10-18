@@ -8,18 +8,6 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
 // Animation variants
-const sectionVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      duration: 0.8,
-      ease: [0.25, 0.46, 0.45, 0.94] as const,
-      staggerChildren: 0.1
-    }
-  }
-};
-
 const imageVariants = {
   hidden: { opacity: 0, scale: 0.95, y: 30 },
   visible: {

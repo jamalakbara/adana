@@ -300,7 +300,7 @@ export function PortfolioSection() {
           <div className="w-full lg:w-auto lg:flex-1" style={{ height: '342px' }}>
             <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 lg:gap-6 h-full">
                 {otherItems.length > 0 ? (
-                  otherItems.map((item, index) => {
+                  otherItems.map((item) => {
                     const itemGlobalIndex = portfolioItems.findIndex(p => p.id === item.id);
                     const isSelected = itemGlobalIndex === activeIndex;
                     return (

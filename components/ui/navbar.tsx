@@ -261,7 +261,7 @@ export function Navbar({ className }: NavbarProps) {
               className="md:hidden absolute top-full left-0 right-0 bg-[#fcfcf4] border-t border-[#e5e5e5] shadow-lg overflow-hidden"
             >
               <div className="py-6">
-                {navigationItems.map((item, index) => (
+                {navigationItems.map((item) => (
                   <motion.div
                     key={item.name}
                     variants={menuItemVariants}

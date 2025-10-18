@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 import { socialLinks, footerLinks, contactInfo, companyInfo } from "@/data";
 import { motion, useInView } from "framer-motion";
+import Image from "next/image";
 
 // Form validation schema
 const newsletterSchema = z.object({
@@ -259,10 +260,12 @@ export function Footer() {
                       variants={socialIconVariants}
                     >
                       {typeof social.icon === 'string' ? (
-                        <img
+                        <Image
                           src={social.icon}
                           alt={social.name}
-                          className="h-4 w-4 object-contain opacity-70 group-hover:opacity-100 transition-all duration-300"
+                          width={16}
+                          height={16}
+                          className="object-contain opacity-70 group-hover:opacity-100 transition-all duration-300"
                           style={{
                             filter: 'grayscale(1) brightness(0) invert(1)'
                           }}
@@ -449,10 +452,12 @@ export function Footer() {
                       variants={socialIconVariants}
                     >
                       {typeof social.icon === 'string' ? (
-                        <img
+                        <Image
                           src={social.icon}
                           alt={social.name}
-                          className="h-4 w-4 object-contain opacity-70 group-hover:opacity-100 transition-all duration-300"
+                          width={16}
+                          height={16}
+                          className="object-contain opacity-70 group-hover:opacity-100 transition-all duration-300"
                           style={{
                             filter: 'grayscale(1) brightness(0) invert(1)'
                           }}
