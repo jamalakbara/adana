@@ -91,14 +91,14 @@ interface PartnerCardProps {
 function PartnerCard({ imageSrc, alt }: PartnerCardProps) {
   return (
     <div
-      className="bg-[#FCFCF4] h-[60px] sm:h-[70px] md:h-[90px] w-[120px] sm:w-[140px] md:w-[204px] rounded-lg flex items-center justify-center flex-shrink-0"
+      className="bg-[#FCFCF4] h-[120px] w-[120px] sm:w-[140px] md:w-[204px] rounded-lg flex items-center justify-center flex-shrink-0"
     >
       <LazyImage
         src={imageSrc}
         alt={alt}
-        width={152}
-        height={40}
-        className="max-h-[40px] sm:max-h-[50px] md:max-h-[60px] max-w-[100px] sm:max-w-[120px] md:max-w-[152px] object-contain"
+        width={120}
+        height={80}
+        className="w-auto h-auto max-w-full max-h-full object-contain"
         skeletonVariant="avatar"
         rootMargin="100px"
       />
