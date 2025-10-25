@@ -296,9 +296,10 @@ export function PortfolioModal({ isOpen, onClose, onAnimationComplete, isClosing
 
                   {/* Description */}
                   <motion.div>
-                    <p className="text-[#1E1E1E] text-[14px] font-normal font-['Inter'] leading-5">
-                      {item.description}
-                    </p>
+                    <div
+                      className="text-[#1E1E1E] text-[14px] font-normal font-['Inter'] leading-5"
+                      dangerouslySetInnerHTML={{ __html: item.description }}
+                    />
                   </motion.div>
                 </motion.div>
               </div>
@@ -344,9 +345,10 @@ export function PortfolioModal({ isOpen, onClose, onAnimationComplete, isClosing
 
                     {/* Description */}
                     <motion.div>
-                      <p className="text-[#1E1E1E] text-[14px] font-normal font-['Inter'] leading-5 w-[522px] max-w-full">
-                        {item.description}
-                      </p>
+                      <div
+                        className="text-[#1E1E1E] text-[14px] font-normal font-['Inter'] leading-5 w-[522px] max-w-full"
+                        dangerouslySetInnerHTML={{ __html: item.description }}
+                      />
                     </motion.div>
                   </motion.div>
                 </div>

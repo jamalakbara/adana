@@ -73,7 +73,7 @@ export function MarqueeClients() {
     >
       {/* Marquee content */}
       <div className="absolute top-[59px] overflow-hidden w-full">
-        <div className="flex gap-[64px] items-center animate-marquee whitespace-nowrap group hover:animate-marquee-pause">
+        <div className="flex gap-12 items-center animate-marquee whitespace-nowrap group hover:animate-marquee-pause">
           {/* First set of client logos */}
           {clientItems.map((client, index) => (
             <ClientLogo key={`first-${client.id}`} client={client} index={index} />

@@ -57,6 +57,19 @@ const smallCardVariants = {
   }
 };
 
+// Helper function to extract plain text from HTML using regex
+const extractTextFromHTML = (html: string) => {
+  return html
+    .replace(/<[^>]*>/g, '') // Remove HTML tags
+    .replace(/&nbsp;/g, ' ') // Replace &nbsp; with space
+    .replace(/&amp;/g, '&') // Replace &amp; with &
+    .replace(/&lt;/g, '<') // Replace &lt; with <
+    .replace(/&gt;/g, '>') // Replace &gt; with >
+    .replace(/&quot;/g, '"') // Replace &quot; with "
+    .replace(/&#39;/g, "'") // Replace &#39; with '
+    .trim();
+};
+
 // Helper function to truncate text after a certain number of words
 const truncateWords = (text: string, maxWords: number) => {
   const words = text.split(' ');
@@ -276,7 +289,7 @@ export function PortfolioSection() {
                       selectedItem.backgroundImage ? 'text-white opacity-80' :
                       (selectedItem.textColor === 'text-white' ? 'text-white opacity-80' : 'text-[#646464]')
                     } line-clamp-6`}>
-                      {truncateWords(selectedItem.description, 15)}
+                      {truncateWords(extractTextFromHTML(selectedItem.description), 15)}
                     </p>
                   </div>
 
@@ -365,7 +378,7 @@ export function PortfolioSection() {
                           <p className={`text-[9px] lg:text-[11px] font-normal leading-[12px] lg:leading-[14px] ${
                             isSelected ? 'text-white opacity-80' : 'text-[#646464] group-hover:text-white opacity-80'
                           } line-clamp-2`}>
-                            {truncateWords(item.description, 8)}
+                            {truncateWords(extractTextFromHTML(item.description), 8)}
                           </p>
                         </div>
 
