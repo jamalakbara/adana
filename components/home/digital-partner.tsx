@@ -98,7 +98,7 @@ function PartnerCard({ imageSrc, alt }: PartnerCardProps) {
         alt={alt}
         width={152}
         height={40}
-        className="max-h-[30px] sm:max-h-[35px] md:max-h-[40px] max-w-[100px] sm:max-w-[120px] md:max-w-[152px] object-contain"
+        className="max-h-[40px] sm:max-h-[50px] md:max-h-[60px] max-w-[100px] sm:max-w-[120px] md:max-w-[152px] object-contain"
         skeletonVariant="avatar"
         rootMargin="100px"
       />

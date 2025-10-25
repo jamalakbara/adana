@@ -301,8 +301,8 @@ export function PortfolioSection() {
           </motion.div>
 
           {/* Right Side - Half-Sectioned Cards */}
-          <div className="w-full lg:w-auto lg:flex-1" style={{ height: '342px' }}>
-            <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 lg:gap-6 h-full">
+          <div className="w-full lg:w-auto lg:flex-1" style={{ height: '520px' }}>
+            <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 h-full">
                 {otherItems.length > 0 ? (
                   otherItems.map((item) => {
                     const itemGlobalIndex = portfolioItems.findIndex(p => p.id === item.id);
@@ -330,12 +330,12 @@ export function PortfolioSection() {
                           relative
                           group
                           w-full
-                          h-full
+                          h-[200px] lg:h-[220px]
                         `}
                       >
                     {/* Logo */}
                     <div className="absolute top-3 lg:top-4 left-3 lg:left-4 z-10">
-                      <div className="w-[60px] h-[12px] lg:w-[80px] lg:h-[14px] overflow-hidden">
+                      <div className="w-[60px] h-[25px] lg:w-[80px] lg:h-[35px] overflow-hidden">
                         <LazyImage
                           src={item.logo}
                           alt={item.client}
