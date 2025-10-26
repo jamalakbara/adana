@@ -1,0 +1,42 @@
+import { NextRequest, NextResponse } from 'next/server'
+
+export default async function GET(request: NextRequest) {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://by-adana.vercel.app'
+
+  // Generate robots content based on user-agent
+  const userAgent = '*'
+
+  const robotsTxt = [
+    '# Robots.txt for Adana Digital Agency',
+    `# Generated dynamically - Last updated: ${new Date().toISOString()}`,
+    '',
+    `User-agent: ${userAgent}`,
+    `Allow: /`,
+    `Sitemap: ${baseUrl}/sitemap.xml`,
+    '',
+    'Disallow: /api/',
+    'Disallow: /_next/',
+    '',
+    '# Crawl delay (optional)',
+    'Crawl-delay: 1',
+    '',
+    '# Allow specific search engines',
+    '',
+    'User-agent: Googlebot',
+    'Allow: /',
+    '',
+    'User-agent: Bingbot',
+    'Allow: /',
+    '',
+    'User-agent: Slurp',
+    'Allow: /',
+    ''
+  ].filter(Boolean).join('\n')
+
+  return new NextResponse(robotsTxt, {
+    headers: {
+      'Content-Type': 'text/plain',
+      'Cache-Control': 'public, max-age=86400' // Cache for 24 hours
+    }
+  })
+}

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Sitemap: https://by-adana.vercel.app/sitemap.xml
+
+Disallow: /api/
+Disallow: /_next/
