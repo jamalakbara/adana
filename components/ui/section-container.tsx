@@ -9,6 +9,7 @@ interface SectionContainerProps {
   maxWidth?: "sm" | "md" | "lg" | "xl" | "none";
   className?: string;
   nodeId?: string;
+  id?: string;
   ref?: React.Ref<HTMLElement>;
 }
 
@@ -41,11 +42,13 @@ export const SectionContainer = React.forwardRef<HTMLElement, SectionContainerPr
   padding = "xl",
   maxWidth = "xl",
   className = "",
-  nodeId
+  nodeId,
+  id
 }, ref) => {
   return (
     <section
       ref={ref}
+      id={id}
       className={`relative ${backgroundClasses[background]} ${paddingClasses[padding]} ${className}`}
       data-node-id={nodeId}
     >

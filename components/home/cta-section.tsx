@@ -1,38 +1,66 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useRef } from "react";
+import Image from "next/image";
 import { SectionContainer } from "@/components/ui/section-container";
 import { Typography } from "@/components/ui/typography";
 import { AnimatedButton } from "@/components/ui/animated-button";
+import { motion, useInView } from "framer-motion";
 
-const imgRectangle25670 = "https://s3-alpha-sig.figma.com/img/d94d/04ad/ce8c83ee2e33c2825df3d199ace1b7ef?Expires=1760313600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=E~umgMLZsDCOwbOAFfjokf8DKPtR16GLC~mu3Y~rbUl8KLMX8dv-KnyL1LQuefLQ1GWLfKhkYG8yBO1u9xtg213K-9qBCohwB~VWDIagaytskOYgTNj30zsSq4TT1qi9Sa92svOySr-BrDMmFUbPCmt2SP97zS-lbFBPDC03HiS4j5Z7TOy4nUOIBJEldjYcHiQxGi66ln5xreHLLlBmIh10DONN0uRwRsrhpsV2ukofRlz1Vp3HUpCjSA2WC3hC4UfHCfCx8nE~wUAtT5gkQiLM~rSyPSUZjlUoHBKyTK0DQ7mkggQw2YwlUNaRFc2AnHt6-r-r8B2BdnMy6zs93g__";
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.6,
+      ease: [0.25, 0.46, 0.45, 0.94] as const
+    }
+  }
+};
+
+const imageVariants = {
+  hidden: { opacity: 0, x: -30 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.6,
+      delay: 0.2,
+      ease: [0.25, 0.46, 0.45, 0.94] as const
+    }
+  }
+};
+
+const contentVariants = {
+  hidden: { opacity: 0, x: 30 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.6,
+      delay: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as const
+    }
+  }
+};
+
+const buttonVariants = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as const
+    }
+  }
+};
 
 export function CtaSection() {
-  const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-      }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
 
   return (
     <SectionContainer
@@ -43,30 +71,38 @@ export function CtaSection() {
       className="py-[60px] sm:py-[80px] md:py-[100px] lg:py-[120px]"
       ref={sectionRef}
     >
-      <div
+      <motion.div
         className="max-w-7xl mx-auto bg-[#F1FF66] rounded-[24px]"
-        style={{
-          animation: isVisible ? 'fadeInScale 0.8s ease-out 0.2s both' : 'none'
-        }}
+        variants={containerVariants}
+        initial="hidden"
+        animate={isInView ? "visible" : "hidden"}
       >
         <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 md:gap-10 lg:gap-12 p-6 sm:p-8 md:p-10 lg:p-12">
           {/* Left side - Image */}
-          <div className="lg:w-1/3 flex justify-start" style={{
-            animation: isVisible ? 'slideInLeft 0.8s ease-out 0.4s both' : 'none'
-          }}>
+          <motion.div
+            className="lg:w-1/3 flex justify-start"
+            variants={imageVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+          >
             <div className="relative w-full aspect-[1/1] sm:aspect-[4/3] md:aspect-[432/441] rounded-[16px] sm:rounded-[20px] md:rounded-[24px] overflow-hidden" data-node-id="115-10779">
-              <img
-                src={imgRectangle25670}
+              <Image
+                src="/cta-image.png"
                 alt="Digital transformation illustration"
+                width={432}
+                height={441}
                 className="w-full h-full object-cover"
               />
             </div>
-          </div>
+          </motion.div>
 
           {/* Right side - Content */}
-          <div className="lg:w-2/3 flex flex-col justify-center items-center lg:items-start text-center lg:text-left" style={{
-            animation: isVisible ? 'slideInRight 0.8s ease-out 0.6s both' : 'none'
-          }}>
+          <motion.div
+            className="lg:w-2/3 flex flex-col justify-center items-center lg:items-start text-center lg:text-left"
+            variants={contentVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+          >
             <Typography
               variant="section-title"
               className="w-full max-w-full sm:max-w-[500px] md:max-w-[600px] lg:max-w-[660px] mb-[16px]"
@@ -86,64 +122,41 @@ export function CtaSection() {
                 color: "#1E1E1E"
               }}
             >
-              Lorem ipsum dolor sit amet consectetur. Maecenas lorem massa eleifend commodo convallis. Pellentesque quis aliquet auctor ultricies. Viverra cursus amet mi pellentesque libero non.
+              Transform your business with our expert digital marketing strategies and data-driven solutions. Our team combines cutting-edge technology with proven methodologies to deliver measurable results that drive sustainable growth. From performance marketing to comprehensive digital campaigns, we&apos;re committed to helping you achieve your business objectives with maximum ROI and lasting impact.
             </Typography>
 
             {/* Benefits */}
-            <div className="flex flex-col sm:flex-row gap-6 mb-[24px] justify-center lg:justify-start" style={{
-                animation: isVisible ? 'fadeInUp 0.6s ease-out 0.8s both' : 'none'
-              }}>
-              <AnimatedButton
-                variant="secondary"
-                hasArrow={true}
-                className="bg-[#1E1E1E]"
-                style={{
-                  animation: isVisible ? 'bounceIn 0.6s ease-out 1s both' : 'none'
-                }}
-              >
-                Free Consultation
-              </AnimatedButton>
+            <motion.div
+              className="flex flex-col sm:flex-row gap-6 mb-[24px] justify-center lg:justify-start"
+              initial="hidden"
+              animate={isInView ? "visible" : "hidden"}
+              transition={{ delay: 0.8, staggerChildren: 0.2 }}
+            >
+              <motion.div variants={buttonVariants}>
+                <AnimatedButton
+                  variant="secondary"
+                  hasArrow={true}
+                  className="bg-[#1E1E1E]"
+                  onClick={() => window.open('https://wa.me/628112114142', '_blank')}
+                >
+                  Free Consultation
+                </AnimatedButton>
+              </motion.div>
 
-              <AnimatedButton
-                variant="ghost"
-                hasArrow={true}
-                className="bg-transparent"
-                style={{
-                  animation: isVisible ? 'bounceIn 0.6s ease-out 1.2s both' : 'none'
-                }}
-              >
-                Get 1 Month Free Service Charge
-              </AnimatedButton>
-            </div>
-          </div>
+              <motion.div variants={buttonVariants}>
+                <AnimatedButton
+                  variant="ghost"
+                  hasArrow={true}
+                  className="bg-transparent hover:bg-transparent"
+                  onClick={() => window.open('https://wa.me/628112114142', '_blank')}
+                >
+                  Get 1 Month Free Service Charge
+                </AnimatedButton>
+              </motion.div>
+            </motion.div>
+          </motion.div>
         </div>
-      </div>
-
-      {/* Animation keyframes */}
-      <style jsx global>{`
-        @keyframes fadeInScale {
-          from { opacity: 0; transform: scale(0.9); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        @keyframes slideInLeft {
-          from { opacity: 0; transform: translateX(-50px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes slideInRight {
-          from { opacity: 0; transform: translateX(50px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes bounceIn {
-          0% { opacity: 0; transform: scale(0.3); }
-          50% { opacity: 1; transform: scale(1.05); }
-          70% { transform: scale(0.9); }
-          100% { opacity: 1; transform: scale(1); }
-        }
-      `}</style>
+      </motion.div>
     </SectionContainer>
   );
 }

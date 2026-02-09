@@ -17,8 +17,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma/Drizzle client
-RUN npm run db:generate
+# Generate Drizzle client (optional for build)
+# RUN npm run db:generate
 
 # Build the application
 RUN npm run build
