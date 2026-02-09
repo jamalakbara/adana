@@ -108,7 +108,8 @@ export function ServicesSection() {
           >
             <ServiceExpansionItem
               title={service.title}
-              description={service.description}
+              intro={service.intro}
+              items={service.items}
               imageUrl={service.image}
               isExpanded={expandedService === service.id}
               onToggle={() => {

@@ -12,6 +12,7 @@ interface LazyImageProps {
   height?: number;
   fill?: boolean;
   className?: string;
+  imageClassName?: string;
   skeletonClassName?: string;
   priority?: boolean;
   quality?: number;
@@ -44,7 +45,8 @@ export function LazyImage({
   onError,
   threshold = 0.1,
   rootMargin = "50px",
-  skeletonVariant = "default"
+  skeletonVariant = "default",
+  imageClassName = ""
 }: LazyImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -75,7 +77,7 @@ export function LazyImage({
     // For fill images (like portfolio modal)
     return (
       <div
-        ref={priority ? undefined : targetRef}
+        ref={priority ? undefined : (targetRef as React.RefObject<HTMLDivElement>)}
         className={className}
         style={{ position: 'relative', ...style }}
       >
@@ -90,13 +92,14 @@ export function LazyImage({
                   zIndex: 1
                 }}
               >
-                <ImageSkeleton variant={skeletonVariant} style={{ width: '100%', height: '100%' }} />
+                <ImageSkeleton variant={skeletonVariant} width="100%" height="100%" />
               </div>
             )}
             <Image
               src={src}
               alt={alt}
               fill
+              className={imageClassName}
               style={{
                 ...(showSkeleton ? { opacity: 0 } : { opacity: 1, transition: 'opacity 0.3s ease-in-out' })
               }}
@@ -119,7 +122,7 @@ export function LazyImage({
               zIndex: 1
             }}
           >
-            <ImageSkeleton variant={skeletonVariant} style={{ width: '100%', height: '100%' }} />
+            <ImageSkeleton variant={skeletonVariant} width="100%" height="100%" />
           </div>
         )}
       </div>
@@ -129,7 +132,7 @@ export function LazyImage({
   // For regular images
   return (
     <div
-      ref={priority ? undefined : targetRef}
+      ref={priority ? undefined : (targetRef as React.RefObject<HTMLDivElement>)}
       className={className}
       style={{ position: 'relative', ...style }}
     >
@@ -144,7 +147,7 @@ export function LazyImage({
                 zIndex: 1
               }}
             >
-              <ImageSkeleton variant={skeletonVariant} style={{ width: '100%', height: '100%' }} />
+              <ImageSkeleton variant={skeletonVariant} width="100%" height="100%" />
             </div>
           )}
           <Image
@@ -174,7 +177,7 @@ export function LazyImage({
             zIndex: 1
           }}
         >
-          <ImageSkeleton variant={skeletonVariant} style={{ width: '100%', height: '100%' }} />
+          <ImageSkeleton variant={skeletonVariant} width="100%" height="100%" />
         </div>
       )}
     </div>
